@@ -39,7 +39,7 @@ using namespace std;
 
 /** This please add your name here as well **/
 const std::string who_am_i() {
-    return "Firstname_Lastname";
+    return "valentina_susarret";
 }
 
 
@@ -56,6 +56,8 @@ const std::string who_am_i() {
  * 
  * Algorithm: Continuously compare adjacent elements and swap them if necessary.
  *            This is a stable, in-place sorting algorithm. Your implementation must be in-place.
+ * 
+ * Notes: We must iterate through the array N times.
  *
  * Parameters:
  *  vector<T> &list: reference to a list of type T. You can assume this type
@@ -66,7 +68,50 @@ const std::string who_am_i() {
  * */
 template<typename T>
 void bubble_sort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size()-1; j++) {
+                if (list.at(j) > list.at(j+1)) {
+                    T temp = list.at(j);
+                    list.at(j) = list.at(j+1);
+                    list.at(j+1) = temp;
+                }
+            }
+        }
+    }
+    // descending 
+    else {
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = list.size()-1; j > 0; j--) {
+                if (list.at(j) > list.at(j-1)) {
+                    T temp = list.at(j);
+                    list.at(j) = list.at(j-1);
+                    list.at(j-1) = temp;
+                }
+            }
+        }
+    }
+}
+
+template<typename T>
+void test_bubble(std::vector<T> &list) {
+    std::cout << "testing bubble sort\n";
+    bubble_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    bubble_sort(list, true);
+    std::cout << "  desending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
 }
 
 
@@ -100,7 +145,29 @@ void bubble_sort(vector<T> &list, bool descending) {
  * */
 template<typename T>
 void selection_sort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        for (int i = 0; i < list.size(); i++) {
+            T min = *std::min_element(list.begin(), list.end());
+            if (list.at(i) != min) {
+                T temp = list.at(i);
+                list.at(i) = min;
+                min = temp;
+            }
+        }
+        
+    }
+    // descending
+    else {
+        for (int i = list.size()-1; i >= 0; i--) {
+            T max = *std::max_element(list.begin(), list.end());
+            if (list.at(i) != min) {
+                T temp = list.at(i);
+                list.at(i) = min;
+                min = temp;
+            }
+        }
+    }
 }
 
 
@@ -302,7 +369,8 @@ void radix_sort(vector<T> &list, unsigned int base, bool descending) {
 int main() {
     /**** STUDENT CODE HERE ****/ 
 
-
+    std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
+    test_bubble(test1);
 
     /**** END STUDENT CODE ****/
 
