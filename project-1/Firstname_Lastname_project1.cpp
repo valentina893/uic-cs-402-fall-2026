@@ -222,10 +222,53 @@ void test_selection(vector<T> &list) {
 //void insertion_sort(vector<T> &list, bool descending = false);
 template<typename T>
 void insertion_sort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        for (int i = 1; i < list.size(); i++) {
+            T key = list.at(i);
+            int j = i - 1;
+
+            while (j >= 0 && list.at(j) > key) {
+                list.at(j+1) = list.at(j);
+                j--;
+            }
+            list.at(j+1) = key;
+        }
+    }
+    // descending
+    else {
+        for (int i = 1; i < list.size(); i++) {
+            T key = list.at(i);
+            int j = i - 1;
+
+            while (j >= 0 && list.at(j) < key) {
+                list.at(j+1) = list.at(j);
+                j--;
+            }
+            list.at(j+1) = key;
+        }
+    }
 }
 
-
+template<typename T>
+void test_insertion(vector<T> &list) {
+    std::cout << "testing insertion sort\n";
+    insertion_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    insertion_sort(list, true);
+    std::cout << "  desending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+}
 
 
 
@@ -389,8 +432,10 @@ int main() {
 
     std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
     std::vector<int> test2 = {6, -3, 4, 8, 0, 2, -1, 20};
+    std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
     test_bubble(test1);
     test_selection(test2);
+    test_insertion(test3);
 
     /**** END STUDENT CODE ****/
 
