@@ -44,9 +44,17 @@ concept Integral = is_integral<T>::value;
 template<typename T>
 void bubble_sort(vector<T> &list, bool descending = false);
 
+/* Test method for Bubble Sort */
+template<typename T>
+void test_bubble(std::vector<T> &list);
+
 /* Selection Sort */
 template<typename T>
 void selection_sort(vector<T> &list, bool descending = false);
+
+/* Test method for selection Sort */
+template<typename T>
+void test_selection(std::vector<T> &list);
 
 /* Insertion Sort */
 template<typename T>
