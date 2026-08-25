@@ -161,16 +161,34 @@ void selection_sort(vector<T> &list, bool descending) {
     else {
         for (int i = list.size()-1; i >= 0; i--) {
             T max = *std::max_element(list.begin(), list.end());
-            if (list.at(i) != min) {
+            if (list.at(i) != max) {
                 T temp = list.at(i);
-                list.at(i) = min;
-                min = temp;
+                list.at(i) = max;
+                max = temp;
             }
         }
     }
 }
 
-
+template<typename T>
+void test_selection(vector<T> &list) {
+    std::cout << "testing selection sort\n";
+    selection_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    selection_sort(list, true);
+    std::cout << "  desending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+}
 
 
 
@@ -370,7 +388,9 @@ int main() {
     /**** STUDENT CODE HERE ****/ 
 
     std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
+    std::vector<int> test2 = {6, -3, 4, 8, 0, 2, -1, 20};
     test_bubble(test1);
+    test_selection(test2);
 
     /**** END STUDENT CODE ****/
 
