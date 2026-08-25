@@ -60,26 +60,49 @@ void test_selection(std::vector<T> &list);
 template<typename T>
 void insertion_sort(vector<T> &list, bool descending = false); 
 
+/* Test method for Insertion Sort */
+template<typename T>
+void test_insertion(std::vector<T> &list);
+
 /* Quick Sort */
 template<typename T>
 void quicksort(vector<T> &list, bool descending = false);
+
+/* Test method for Quick Sort */
+template<typename T>
+void test_quick(std::vector<T> &list);
 
 /* Merge Sort */
 template<typename T>
 void merge_sort(vector<T> &list, bool descending = false);
 
+/* Test method for Merge Sort */
+template<typename T>
+void test_merge(std::vector<T> &list);
+
 /* Your Hybrid Sort */
 template<typename T>
 void my_hybrid_sort(vector<T> &list, bool descending = false);
+
+/* Test method for Hybrid Sort */
+template<typename T>
+void test_hybrid(std::vector<T> &list);
 
 /* Binary Radix Sort */
 template<Integral T>
 void binary_radix_sort(vector<T> &list, bool descending = false);
 
+/* Test method for Binary Radix Sort */
+template<typename T>
+void test_binary_radix(std::vector<T> &list);
+
 /* Base B Radix Sort */
 template<Integral T> 
 void radix_sort(vector<T> &list, unsigned int base = 10, bool descending = false);
 
+/* Test method for Base B Radix Sort */
+template<typename T>
+void test_radix(std::vector<T> &list);
 
 
 #endif
