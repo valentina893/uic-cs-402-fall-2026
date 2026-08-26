@@ -69,10 +69,10 @@ template<typename T>
 void quicksort(vector<T> &list, bool descending = false);
 
 template<typename T>
-void quicksort_rec(vector<T> &list, int low, int high);
+void quicksort_rec(vector<T> &list, int low, int high, bool descending);
 
 template<typename T>
-int partition(vector<T> &list, int low, int hight);
+int partition(vector<T> &list, int low, int hight, bool descending);
 
 /* Test method for Quick Sort */
 template<typename T>
