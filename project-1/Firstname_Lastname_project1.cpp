@@ -295,13 +295,67 @@ void test_insertion(vector<T> &list) {
  * */
 template<typename T>
 void quicksort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        quicksort_rec(list, 0, list.size()-1);
+    }
+    // descending
+    else {
+        quicksort_rec(list, list.size()-1, 0);
+    }
 }
 
+template<typename T>
+void quicksort_rec(vector<T> &list, int low, int high) {
+    if (low < high) {
+        int pi = partition(list, low, high);
 
+        quicksort_rec(list, low, pi-1);
+        quicksort_rec(list, pi+1, high);
+    }
+}
 
+template<typename T>
+int partition(vector<T> &list, int low, int high) {
+    int pivot = list.at(high);
 
+    int i = low - 1;
 
+    for (int j = low; j < high; j++) {
+        if (list.at(j) <= pivot) {
+            i++;
+            T temp = list.at(i);
+            list.at(i) = list.at(j);
+            list.at(j) = temp;
+        }
+    }
+
+    T temp = list.at(i+1);
+    list.at(i+1) = list.at(high);
+    list.at(high) = temp;
+
+    return i + 1;
+}
+
+template<typename T>
+void test_quick(std::vector<T> &list) {
+    std::cout << "testing quick sort\n";
+    quicksort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    quicksort(list, true);
+    std::cout << "  descending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }  
+}
 
 
 
@@ -324,12 +378,78 @@ void quicksort(vector<T> &list, bool descending) {
  * */
 template<typename T>
 void merge_sort(vector<T> &list, bool decending) {
-    // Your code here!
+    if (list.size() <= 1) {
+        return;
+    }
+
+    int mid = list.size() / 2;
+    vector<T> left;
+    vector<T> right;
+
+    for (int i = 0; i < mid; i++) {
+        left.push_back(list.at(i));
+    }
+    for (int i = mid; i < list.size(); i++) {
+        right.push_back(list.at(i));
+    }
+    
+    // ascending
+    if (!decending) {
+        merge_sort(left, decending);
+        merge_sort(right, decending);
+        list = merge(left, right);
+    }
+    // descending
+    else {
+
+    }
 }
 
+template<typename T>
+vector<T> merge(vector<T> &left, vector<T> &right) {
+    vector<T> result;
+    int i = 0;
+    int j = 0;
 
+    while (i < left.size() && j < right.size()) {
+        if (left.at(i) < right.at(j)) {
+            result.push_back(left.at(i));
+            i++;
+        } else {
+            result.push_back(right.at(j));
+            j++;
+        }
+    }
 
+    for (int k = i; k < left.size(); k++) {
+        result.push_back(left.at(k));
+    }
+    for (int k = j; k < left.size(); k++) {
+        result.push_back(right.at(k));
+    }
 
+    return result;
+}
+
+template<typename T>
+void test_merge(std::vector<T> &list) {
+    std::cout << "testing merge sort\n";
+    merge_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    merge_sort(list, true);
+    std::cout << "  descending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+}
 
 
 
@@ -433,9 +553,13 @@ int main() {
     std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
     std::vector<int> test2 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
+    std::vector<int> test4 = {6, -3, 4, 8, 0, 2, -1, 20};
+    std::vector<int> test5 = {6, -3, 4, 8, 0, 2, -1, 20};
     test_bubble(test1);
     test_selection(test2);
     test_insertion(test3);
+    test_quick(test4);
+    test_merge(test5);
 
     /**** END STUDENT CODE ****/
 
