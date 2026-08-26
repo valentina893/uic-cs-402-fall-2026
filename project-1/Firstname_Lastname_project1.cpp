@@ -507,9 +507,54 @@ void my_hybrid_sort(vector<T> &list, bool descending) {
 //concept Integral = std::is_integral<T>::value;
 template<Integral T> 
 void binary_radix_sort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    int zeros = 0;
+    int ones = 0;
+    for (int i = 0; i < list.size(); i++) {
+        if (list.at(i) == 0) {
+            zeros++;
+        } else {
+            ones++;
+        }
+    }
+    if (!descending) {
+        for (int i = 0; i < zeros; i++) {
+            list.at(i) = 0;
+        }
+        for (int i = zeros; i < ones; i++) {
+            list.at(i) = 1;
+        }
+    }
+    // descending
+    else {
+        for (int i = 0; i < ones; i++) {
+            list.at(i) = 1;
+        }
+        for (int i = ones; i < zeros; i++) {
+            list.at(i) = 0;
+        }
+    }
 }
 
+template<typename T>
+void test_binary_radix(std::vector<T> &list) {
+    std::cout << "testing binary radix sort\n";
+    binary_radix_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0};
+    binary_radix_sort(list, true);
+    std::cout << "  descending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+}
 
 
 /* Base B Radix Sort 
@@ -561,11 +606,13 @@ int main() {
     std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test4 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test5 = {6, -3, 4, 8, 0, 2, -1, 20};
+    std::vector<int> b_radix = {0, 1, 0, 0, 1, 1, 0, 0, 0, 1};
     test_bubble(test1);
     test_selection(test2);
     test_insertion(test3);
     test_quick(test4);
     test_merge(test5);
+    test_binary_radix(b_radix);
 
     /**** END STUDENT CODE ****/
 
