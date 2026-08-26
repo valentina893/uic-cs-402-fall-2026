@@ -467,13 +467,13 @@ void test_merge(std::vector<T> &list) {
 
 
 
-/* Your Hybrid Sort
+/* Your Hybrid Sort: Selection-Bubble Sort
  *
  * 20 points
  *
- * Algorithm: Your own custom Hybrid Sorting algorithm! Remember, a hybrid
- *            sort tries to take advantage of two (or more) sorting algorithms
- *            to speed up data processing.
+ * Algorithm: For each item in the array, we swap it with the
+ * min (ascending) or max (descending) element and iterate through
+ * the rest of the array to flip adjacent pairs.
  *
  * Parameters:
  *  vector<T> &list: reference to a list of type T. You can assume this type
@@ -485,7 +485,63 @@ void test_merge(std::vector<T> &list) {
  */
 template<typename T>
 void my_hybrid_sort(vector<T> &list, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        for (int i = 0; i < list.size(); i++) {
+            T min = *std::min_element(list.begin(), list.end());
+            if (list.at(i) != min) {
+                T temp = list.at(i);
+                list.at(i) = min;
+                min = temp;
+            }
+            for (int j = 0; j < list.size()-1; j++) {
+                if (list.at(j) > list.at(j+1)) {
+                    T temp = list.at(j);
+                    list.at(j) = list.at(j+1);
+                    list.at(j+1) = temp;
+                }
+            }
+        }
+        
+    }
+    // descending
+    else {
+        for (int i = list.size()-1; i >= 0; i--) {
+            T max = *std::max_element(list.begin(), list.end());
+            if (list.at(i) != max) {
+                T temp = list.at(i);
+                list.at(i) = max;
+                max = temp;
+            }
+            for (int j = list.size()-1; j > 0; j--) {
+                if (list.at(j) > list.at(j-1)) {
+                    T temp = list.at(j);
+                    list.at(j) = list.at(j-1);
+                    list.at(j-1) = temp;
+                }
+            }
+        }
+    }
+}
+
+template<typename T>
+void test_hybrid(std::vector<T> &list) {
+    std::cout << "testing hybrid sort\n";
+    my_hybrid_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    my_hybrid_sort(list, true);
+    std::cout << "  descending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
 }
 
 
@@ -593,6 +649,25 @@ void radix_sort(vector<T> &list, unsigned int base, bool descending) {
     // Your code here!
 }
 
+template<typename T>
+void test_radix(std::vector<T> &list) {
+    std::cout << "testing radix sort\n";
+    radix_sort(list, false);
+    std::cout << "  ascending: ";
+    if (std::is_sorted(list.begin(), list.end()) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+    list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
+    radix_sort(list, true);
+    std::cout << "  descending: ";
+    if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
+        std::cout << "passed\n";
+    } else {
+        std::cout << "failed\n";
+    }
+}
 
 
 
@@ -606,13 +681,17 @@ int main() {
     std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test4 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test5 = {6, -3, 4, 8, 0, 2, -1, 20};
+    std::vector<int> test6 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> b_radix = {0, 1, 0, 0, 1, 1, 0, 0, 0, 1};
+    std::vector<int> radix = {6, 4, 8, 0, 2, 20};
     test_bubble(test1);
     test_selection(test2);
     test_insertion(test3);
     test_quick(test4);
     test_merge(test5);
+    test_hybrid(test6);
     test_binary_radix(b_radix);
+    test_radix(radix);
 
     /**** END STUDENT CODE ****/
 
