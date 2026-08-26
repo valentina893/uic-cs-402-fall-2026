@@ -68,6 +68,12 @@ void test_insertion(std::vector<T> &list);
 template<typename T>
 void quicksort(vector<T> &list, bool descending = false);
 
+template<typename T>
+void quicksort_rec(vector<T> &list, int low, int high);
+
+template<typename T>
+int partition(vector<T> &list, int low, int hight);
+
 /* Test method for Quick Sort */
 template<typename T>
 void test_quick(std::vector<T> &list);
@@ -75,6 +81,9 @@ void test_quick(std::vector<T> &list);
 /* Merge Sort */
 template<typename T>
 void merge_sort(vector<T> &list, bool descending = false);
+
+template<typename T>
+vector<T> merge(vector<T> &left, vector<T> &right);
 
 /* Test method for Merge Sort */
 template<typename T>
