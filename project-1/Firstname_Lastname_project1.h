@@ -83,7 +83,7 @@ template<typename T>
 void merge_sort(vector<T> &list, bool descending = false);
 
 template<typename T>
-vector<T> merge(vector<T> &left, vector<T> &right);
+vector<T> merge(vector<T> &left, vector<T> &right, bool descending);
 
 /* Test method for Merge Sort */
 template<typename T>
