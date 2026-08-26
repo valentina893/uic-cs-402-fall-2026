@@ -295,38 +295,40 @@ void test_insertion(vector<T> &list) {
  * */
 template<typename T>
 void quicksort(vector<T> &list, bool descending) {
-    // ascending
-    if (!descending) {
-        quicksort_rec(list, 0, list.size()-1);
-    }
-    // descending
-    else {
-        quicksort_rec(list, list.size()-1, 0);
-    }
+    quicksort_rec(list, 0, list.size()-1, descending);
 }
 
 template<typename T>
-void quicksort_rec(vector<T> &list, int low, int high) {
+void quicksort_rec(vector<T> &list, int low, int high, bool descending) {
     if (low < high) {
-        int pi = partition(list, low, high);
+        int pi = partition(list, low, high, descending);
 
-        quicksort_rec(list, low, pi-1);
-        quicksort_rec(list, pi+1, high);
+        quicksort_rec(list, low, pi-1, descending);
+        quicksort_rec(list, pi+1, high, descending);
     }
 }
 
 template<typename T>
-int partition(vector<T> &list, int low, int high) {
+int partition(vector<T> &list, int low, int high, bool descending) {
     int pivot = list.at(high);
 
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
-        if (list.at(j) <= pivot) {
-            i++;
-            T temp = list.at(i);
-            list.at(i) = list.at(j);
-            list.at(j) = temp;
+        if (!descending) {
+            if (list.at(j) <= pivot) {
+                i++;
+                T temp = list.at(i);
+                list.at(i) = list.at(j);
+                list.at(j) = temp;
+            }
+        } else {
+            if (list.at(j) >= pivot) {
+                i++;
+                T temp = list.at(i);
+                list.at(i) = list.at(j);
+                list.at(j) = temp;
+            }
         }
     }
 
