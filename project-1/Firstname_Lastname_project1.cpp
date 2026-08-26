@@ -395,38 +395,42 @@ void merge_sort(vector<T> &list, bool decending) {
         right.push_back(list.at(i));
     }
     
-    // ascending
-    if (!decending) {
-        merge_sort(left, decending);
-        merge_sort(right, decending);
-        list = merge(left, right);
-    }
-    // descending
-    else {
-
-    }
+    merge_sort(left, decending);
+    merge_sort(right, decending);
+    list = merge(left, right, decending);
 }
 
 template<typename T>
-vector<T> merge(vector<T> &left, vector<T> &right) {
+vector<T> merge(vector<T> &left, vector<T> &right, bool descending) {
     vector<T> result;
     int i = 0;
     int j = 0;
 
     while (i < left.size() && j < right.size()) {
-        if (left.at(i) < right.at(j)) {
-            result.push_back(left.at(i));
-            i++;
+        // ascending
+        if (!descending) {
+            if (left.at(i) < right.at(j)) {
+                result.push_back(left.at(i));
+                i++;
+            } else {
+                result.push_back(right.at(j));
+                j++;
+            }
         } else {
-            result.push_back(right.at(j));
-            j++;
+            if (left.at(i) >= right.at(j)) {
+                result.push_back(left.at(i));
+                i++;
+            } else {
+                result.push_back(right.at(j));
+                j++;
+            }
         }
     }
 
     for (int k = i; k < left.size(); k++) {
         result.push_back(left.at(k));
     }
-    for (int k = j; k < left.size(); k++) {
+    for (int k = j; k < right.size(); k++) {
         result.push_back(right.at(k));
     }
 
