@@ -105,9 +105,13 @@ void binary_radix_sort(vector<T> &list, bool descending = false);
 template<typename T>
 void test_binary_radix(std::vector<T> &list);
 
-/* Counting sort method to be used in radix_sort */
+/* ascending Counting sort method to be used in radix_sort */
 template<typename T>
 void count_sort_asc(std::vector<T> &list, int exp, unsigned int base);
+
+/* descending Counting sort method to be used in radix_sort */
+template<typename T>
+void count_sort_desc(std::vector<T> &list, int exp, unsigned int base);
 
 /* Base B Radix Sort */
 template<Integral T> 
