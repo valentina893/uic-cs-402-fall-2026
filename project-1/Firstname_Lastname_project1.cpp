@@ -636,12 +636,6 @@ void test_binary_radix(std::vector<T> &list) {
  *                   in ascending order (the default).
  *
  *
- * Additional Information:
- *   - If you are enrolled in the graduate section of this course, you MUST
- *     implement this function (i.e., it counts towards your total grade).
- *
- *   - If you are enrolled in the undergraduate section of this course, this
- *     function is optional and worth extra credit.
  *
  */
 template<Integral T>
