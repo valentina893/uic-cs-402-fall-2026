@@ -612,6 +612,26 @@ void test_binary_radix(std::vector<T> &list) {
     }
 }
 
+template<typename T>
+void count_sort_asc(std::vector<T> &list, int exp, unsigned int base) {
+    vector<T> output(list.size());
+    vector<int> count(base);
+
+    for (int i = 0; i < list.size(); i++) {
+        count[(list[i] / exp) % base]++;
+    }
+
+    for (int i = 1; i < base; i++)
+        count[i] += count[i - 1];
+
+    for (int i = list.size() - 1; i >= 0; i--) {
+        output[count[(list[i] / exp) % base] - 1] = list[i];
+        count[(list[i] / exp) % base]--;
+    }
+
+    for (int i = 0; i < list.size(); i++)
+        list[i] = output[i];
+}
 
 /* Base B Radix Sort 
  *
@@ -640,13 +660,20 @@ void test_binary_radix(std::vector<T> &list) {
  */
 template<Integral T>
 void radix_sort(vector<T> &list, unsigned int base, bool descending) {
-    // Your code here!
+    // ascending
+    if (!descending) {
+        int max = *std::max_element(list.begin(), list.end());
+
+        for (int exp = 1; max / exp > 0; exp *= base) {
+            count_sort_asc(list, exp, base);
+        }
+    }
 }
 
 template<typename T>
 void test_radix(std::vector<T> &list) {
     std::cout << "testing radix sort\n";
-    radix_sort(list, false);
+    radix_sort(list, 10, false);
     std::cout << "  ascending: ";
     if (std::is_sorted(list.begin(), list.end()) == true) {
         std::cout << "passed\n";
@@ -654,7 +681,7 @@ void test_radix(std::vector<T> &list) {
         std::cout << "failed\n";
     }
     list = {0, 1, 5, 6, 2, 3, 9, 17, 16};
-    radix_sort(list, true);
+    radix_sort(list, 10, true);
     std::cout << "  descending: ";
     if (std::is_sorted(list.begin(), list.end(), std::greater<>{}) == true) {
         std::cout << "passed\n";
@@ -670,7 +697,7 @@ void test_radix(std::vector<T> &list) {
 int main() {
     /**** STUDENT CODE HERE ****/ 
 
-    /*
+    
     std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
     std::vector<int> test2 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
@@ -687,7 +714,7 @@ int main() {
     test_hybrid(test6);
     test_binary_radix(b_radix);
     test_radix(radix);
-    */
+    
 
     /**** END STUDENT CODE ****/
 
