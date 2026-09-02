@@ -633,6 +633,28 @@ void count_sort_asc(std::vector<T> &list, int exp, unsigned int base) {
         list[i] = output[i];
 }
 
+template<typename T>
+void count_sort_desc(std::vector<T> &list, int exp, unsigned int base) {
+    vector<T> output(list.size());
+    vector<int> count(base);
+
+    for (int i = 0; i < list.size(); i++) {
+        count[(base-1)-list[i]/exp%base]++;
+        //bucket[9-a[i]/exp%10]++;
+    }
+
+    for (int i = 1; i < base; i++)
+        count[i] += count[i - 1];
+
+    for (int i = list.size() - 1; i >= 0; i--) {
+        output[--count[(base-1)-list[i]/exp%10]] = list[i];
+        //b[--bucket[9-a[i]/exp%10]]=a[i];
+    }
+
+    for (int i = 0; i < list.size(); i++)
+        list[i] = output[i];
+}
+
 /* Base B Radix Sort 
  *
  * 25 Points
@@ -666,6 +688,14 @@ void radix_sort(vector<T> &list, unsigned int base, bool descending) {
 
         for (int exp = 1; max / exp > 0; exp *= base) {
             count_sort_asc(list, exp, base);
+        }
+    }
+    // descending 
+    else {
+        int max = *std::max_element(list.begin(), list.end());
+
+        for (int exp = 1; max / exp > 0; exp *= base) {
+            count_sort_desc(list, exp, base);
         }
     }
 }
