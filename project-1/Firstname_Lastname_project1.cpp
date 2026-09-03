@@ -682,20 +682,22 @@ void count_sort_desc(std::vector<T> &list, int exp, unsigned int base) {
  */
 template<Integral T>
 void radix_sort(vector<T> &list, unsigned int base, bool descending) {
-    // ascending
-    if (!descending) {
-        int max = *std::max_element(list.begin(), list.end());
+    if (list.size() > 0) {
+        // ascending
+        if (!descending) {
+            int max = *std::max_element(list.begin(), list.end());
 
-        for (int exp = 1; max / exp > 0; exp *= base) {
-            count_sort_asc(list, exp, base);
+            for (int exp = 1; max / exp > 0; exp *= base) {
+                count_sort_asc(list, exp, base);
+            }
         }
-    }
-    // descending 
-    else {
-        int max = *std::max_element(list.begin(), list.end());
+        // descending 
+        else {
+            int max = *std::max_element(list.begin(), list.end());
 
-        for (int exp = 1; max / exp > 0; exp *= base) {
-            count_sort_desc(list, exp, base);
+            for (int exp = 1; max / exp > 0; exp *= base) {
+                count_sort_desc(list, exp, base);
+            }
         }
     }
 }
@@ -727,7 +729,7 @@ void test_radix(std::vector<T> &list) {
 int main() {
     /**** STUDENT CODE HERE ****/ 
 
-    
+    /*
     std::vector<int> test1 = {1, 2, 4, 7, 3, 2, -1, 0};
     std::vector<int> test2 = {6, -3, 4, 8, 0, 2, -1, 20};
     std::vector<int> test3 = {6, -3, 4, 8, 0, 2, -1, 20};
@@ -744,6 +746,8 @@ int main() {
     test_hybrid(test6);
     test_binary_radix(b_radix);
     test_radix(radix);
+
+    */
     
 
     /**** END STUDENT CODE ****/
@@ -758,7 +762,7 @@ int main() {
      *     autograder will throw an error if you run it without uncommenting the code.
      */
 
-     /*
+    
 
     vector<int> test_list {1, 2, 3, 4, 5};
     vector<unsigned int> test_list2 {1, 2, 3, 4, 5};
@@ -840,6 +844,8 @@ int main() {
     binary_radix_sort(test_list8);
     binary_radix_sort(test_list9);
 
+    std::cout << "testing radix\n";
+
     radix_sort(test_list);
     radix_sort(test_list2);
     radix_sort(test_list6);
@@ -847,7 +853,6 @@ int main() {
     radix_sort(test_list8);
     radix_sort(test_list9);
 
-    */
     
     return 0;
 }
