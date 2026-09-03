@@ -844,8 +844,6 @@ int main() {
     binary_radix_sort(test_list8);
     binary_radix_sort(test_list9);
 
-    std::cout << "testing radix\n";
-
     radix_sort(test_list);
     radix_sort(test_list2);
     radix_sort(test_list6);
