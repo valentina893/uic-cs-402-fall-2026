@@ -68,6 +68,7 @@ const std::string who_am_i() {
  * */
 template<typename T>
 void bubble_sort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     // ascending
     if (!descending) {
         for (int i = 0; i < list.size(); i++) {
@@ -145,6 +146,7 @@ void test_bubble(std::vector<T> &list) {
  * */
 template<typename T>
 void selection_sort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     // ascending
     if (!descending) {
         for (int i = 0; i < list.size(); i++) {
@@ -222,6 +224,7 @@ void test_selection(vector<T> &list) {
 //void insertion_sort(vector<T> &list, bool descending = false);
 template<typename T>
 void insertion_sort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     // ascending
     if (!descending) {
         for (int i = 1; i < list.size(); i++) {
@@ -295,6 +298,7 @@ void test_insertion(vector<T> &list) {
  * */
 template<typename T>
 void quicksort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     quicksort_rec(list, 0, list.size()-1, descending);
 }
 
@@ -380,9 +384,7 @@ void test_quick(std::vector<T> &list) {
  * */
 template<typename T>
 void merge_sort(vector<T> &list, bool decending) {
-    if (list.size() <= 1) {
-        return;
-    }
+    if (list.size() <= 1) return;
 
     int mid = list.size() / 2;
     vector<T> left;
@@ -485,6 +487,7 @@ void test_merge(std::vector<T> &list) {
  */
 template<typename T>
 void my_hybrid_sort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     // ascending
     if (!descending) {
         for (int i = 0; i < list.size(); i++) {
@@ -563,6 +566,7 @@ void test_hybrid(std::vector<T> &list) {
 //concept Integral = std::is_integral<T>::value;
 template<Integral T> 
 void binary_radix_sort(vector<T> &list, bool descending) {
+    if (list.size() <= 1) return;
     // ascending
     int zeros = 0;
     int ones = 0;
@@ -682,7 +686,7 @@ void count_sort_desc(std::vector<T> &list, int exp, unsigned int base) {
  */
 template<Integral T>
 void radix_sort(vector<T> &list, unsigned int base, bool descending) {
-    if (list.size() > 0) {
+    if (list.size() > 1) {
         // ascending
         if (!descending) {
             int max = *std::max_element(list.begin(), list.end());
