@@ -193,7 +193,47 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
     // signatures match the `test_hash` function signature.
     
     // Your code here!
-    return vector<unsigned int>();
+    vector<unsigned int> res;
+
+    unsigned short tort = hash_function(0);
+    unsigned short hare = hash_function(hash_function(0));
+    size_t i = 0;
+
+    while (tort != hare) {
+        // tort takes 1 step, hare takes two steps
+        tort = hash_function(tort);
+        hare = hash_function(hash_function(hare));
+        i++;
+    }
+
+    if (verbose) {
+        cout << "\nbirthday attack 2 results:\n";
+        cout << "  1-2 step found collision after " << i << " attempts\n";
+        cout << "  tort: " << tort << endl;
+        cout << "  hare: " << hare << endl;
+    }
+
+    // reset tort
+    tort = 0;
+    i = 0;
+
+    while (tort != hare) {
+        // both take 1 step
+        tort = hash_function(tort);
+        hare = hash_function(hare);
+        i++;
+    }
+
+    if (verbose) {
+        cout << "  found another collision after " << i << " attempts hashing 1 step each\n";
+        cout << "  tort: " << tort << endl;
+        cout << "  hare: " << hare << endl;
+    }
+
+    res.push_back(tort);
+    res.push_back(hare);
+
+    return res;
 }
 
 
@@ -420,6 +460,7 @@ int main(int argc, char** argv) {
     }
 
     vector<unsigned int> bday1 = birthday_attack_1(test_hash);
+    vector<unsigned int> bday2 = birthday_attack_2(test_hash);
 
     return 0;
 }
