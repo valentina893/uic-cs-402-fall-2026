@@ -8,13 +8,17 @@
 #include <algorithm>
 #include "sha256.c"
 
+#include <unordered_map>
+
 // be sure to change FIRSTNAME and LASTNAME with your own first and last name
 #include "Firstname_Lastname_project2.h"
 
 using namespace std;
 
+bool verbose = false;
+
 const string who_am_i() {
-    return "Firstname_Lastname";
+    return "Valentina_Ramirez-Susarret";
 }
 
 /****************
@@ -107,6 +111,35 @@ vector<unsigned int> birthday_attack_1(function<unsigned short(unsigned int)> ha
     // signatures match the `test_hash` function signature.
     
     // Your code here!
+    vector<unsigned int> res;
+
+    unordered_map<unsigned short, unsigned int> seen; // <hash value, integer>
+    size_t num_attempts = 0;
+
+    while (num_attempts < 350) {
+        num_attempts++;
+        unsigned int integer = sample_int();
+        unsigned short hash_value = test_hash(integer);
+
+        // check if hash_value was already generated
+        if (seen.find(hash_value) != seen.end()) {
+            if (verbose) {
+                cout << "birthday attack 1 results:\n";
+                cout << "  collision found after " << num_attempts << " attempts\n";
+                cout << "  prev integer: " << seen[hash_value] << endl;
+                cout << "  curr integer: " << integer << endl;
+            }
+            res.push_back(seen[hash_value]);
+            res.push_back(integer);
+            return res;
+        }
+
+        seen[hash_value] = integer;
+    }
+    if (verbose) {
+        cout << "birthday attack 1 produced no collisions after " << num_attempts << " attempts.\n";
+    }
+    return res;
 }
 
 
@@ -160,6 +193,7 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
     // signatures match the `test_hash` function signature.
     
     // Your code here!
+    return vector<unsigned int>();
 }
 
 
@@ -206,6 +240,7 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
 
 
 string merkle_commit(const vector<string>& list, function<string(string)> hash_function) {
+    return "";
 }
 
  /* 2. The Positional Open Algorithm (20 points)
@@ -297,7 +332,7 @@ vector<string> merkle_open_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
-    
+    return vector<string>();
 }
 
 
@@ -346,6 +381,7 @@ int merkle_verify_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
+    return 0;
 }
 
 
@@ -370,10 +406,20 @@ int merkle_verify_position(
  */
 
 int merkle_verify_full(const string root, const vector<std::string> list) {
+    return 0;
 }
 
 
 
-int main() {
+int main(int argc, char** argv) {
+
+    for (int i = 1; i < argc; i++) {
+        if (string(argv[i]) == "-v") {
+            verbose = true;
+        }
+    }
+
+    vector<unsigned int> bday1 = birthday_attack_1(test_hash);
+
     return 0;
 }
