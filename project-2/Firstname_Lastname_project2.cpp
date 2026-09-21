@@ -119,7 +119,7 @@ vector<unsigned int> birthday_attack_1(function<unsigned short(unsigned int)> ha
     while (num_attempts < 350) {
         num_attempts++;
         unsigned int integer = sample_int();
-        unsigned short hash_value = test_hash(integer);
+        unsigned short hash_value = hash_function(integer);
 
         // check if hash_value was already generated
         if (seen.find(hash_value) != seen.end()) {
