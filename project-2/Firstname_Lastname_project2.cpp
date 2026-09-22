@@ -280,6 +280,24 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
 
 
 string merkle_commit(const vector<string>& list, function<string(string)> hash_function) {
+    if (list.size() >= 1) {
+        vector<string> curr_level;
+        for (int i = 0; i < list.size(); i++) {
+            curr_level.push_back(hash_function(list.at(i)));
+        }
+        while (list.size() > 1) {
+            vector<string> next_level;
+            if (curr_level.size() % 2 != 0) {
+                curr_level.push_back(curr_level.at(curr_level.size()-1));
+            }
+            for (int i = 0; i < curr_level.size(); i += 2) {
+                string combined = curr_level.at(i) + curr_level.at(i+1);
+                next_level.push_back(hash_function(combined));
+            }
+
+            curr_level = next_level;
+        }
+    }
     return "";
 }
 
