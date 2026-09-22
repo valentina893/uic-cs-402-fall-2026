@@ -217,7 +217,7 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
     tort = 0;
     i = 0;
 
-    while (tort != hare) {
+    while (hash_function(tort) != hash_function(hare)) {
         // both take 1 step
         tort = hash_function(tort);
         hare = hash_function(hare);
