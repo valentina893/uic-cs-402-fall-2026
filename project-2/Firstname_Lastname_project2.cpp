@@ -17,6 +17,8 @@ using namespace std;
 
 bool verbose = false;
 
+SHA256 sha265 = SHA256();
+
 const string who_am_i() {
     return "Valentina_Ramirez-Susarret";
 }
@@ -283,9 +285,10 @@ string merkle_commit(const vector<string>& list, function<string(string)> hash_f
     if (list.size() >= 1) {
         vector<string> curr_level;
         for (int i = 0; i < list.size(); i++) {
-            curr_level.push_back(hash_function(list.at(i)));
+            string to_hash = list.at(i) + to_string(i);
+            curr_level.push_back(hash_function(to_hash));
         }
-        while (list.size() > 1) {
+        while (curr_level.size() > 1) {
             vector<string> next_level;
             if (curr_level.size() % 2 != 0) {
                 curr_level.push_back(curr_level.at(curr_level.size()-1));
@@ -294,9 +297,9 @@ string merkle_commit(const vector<string>& list, function<string(string)> hash_f
                 string combined = curr_level.at(i) + curr_level.at(i+1);
                 next_level.push_back(hash_function(combined));
             }
-
             curr_level = next_level;
         }
+        return curr_level.at(0);
     }
     return "";
 }
@@ -477,8 +480,24 @@ int main(int argc, char** argv) {
         }
     }
 
+    SHA256 s;
+
     vector<unsigned int> bday1 = birthday_attack_1(test_hash);
     vector<unsigned int> bday2 = birthday_attack_2(test_hash);
+
+    vector<string> commit_test = {"a", "b", "c", "d"};
+
+    if (verbose) {
+    cout << "\ntesting merkle commit with tree:\n";
+    for (int i = 0; i < commit_test.size(); i++) {
+        cout << commit_test.at(i) << " ";
+    }
+    cout << endl;
+    }
+
+    string commit = merkle_commit(commit_test, s.hashString);
+
+    if (verbose) cout << commit << endl;
 
     return 0;
 }
