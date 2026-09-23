@@ -387,13 +387,42 @@ list=[ A, B,  C, D, E, F,   G, H ]
  *      - 2.5 points of extra credit will be awarded if your algorithm can handle inputs of
  *          size n, where n is NOT a power of 2.
  */
-
+/*
+ *      - One algorithm for obtaining this proof is given below recursively
+ *          - if the list is of size 1, add list[i] to proof and return.
+ *          - otherwise, divide the list into two halves: list_left, list_right.
+ *              - if index i is in list_left:
+ *                  - recurse on list_left
+ *                  - merkle hash list_right, obtaining root_right -- What does it mean to merkle hash list_right?
+ *                  - add root_right to the proof
+ *              - otherwise, index i is in list_right:
+ *                  - recurse on list_right
+ *                  - merkle hash list_left, obtaining root_left   -- Same question, merkle hash list_left meaning?
+ *                  - add root_left to the proof
+*/
 vector<string> merkle_open_position(
     const vector<string>& list, 
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
-    return vector<string>();
+    vector<string> proof;
+    if (list.size() != 1) {
+        auto middle = list.begin() + list.size() / 2;
+        vector<string> list_left(list.begin(), middle);
+        vector<string> list_right(middle, list.end());
+        if (i < list_left.size()) {
+            proof = merkle_open_position(list_left, hash_function, i / 2);
+            string root_right = hash_function(list_right.at(0));
+            proof.push_back(root_right);
+        } else {
+            proof = merkle_open_position(list_right, hash_function, i / 2);
+            string root_left = hash_function(list_left.at(0));
+            proof.push_back(root_left);
+        }
+    } else {
+        proof.push_back(list.at(i));
+    }
+    return proof;
 }
 
 
@@ -485,19 +514,29 @@ int main(int argc, char** argv) {
     vector<unsigned int> bday1 = birthday_attack_1(test_hash);
     vector<unsigned int> bday2 = birthday_attack_2(test_hash);
 
-    vector<string> commit_test = {"a", "b", "c", "d"};
+    vector<string> merkle_tree = {"a", "b", "c", "d"};
 
     if (verbose) {
-    cout << "\ntesting merkle commit with tree:\n";
-    for (int i = 0; i < commit_test.size(); i++) {
-        cout << commit_test.at(i) << " ";
+    cout << "\ntesting merkle methods with merkle tree:\n";
+    for (int i = 0; i < merkle_tree.size(); i++) {
+        cout << merkle_tree.at(i) << " ";
     }
     cout << endl;
     }
 
-    string commit = merkle_commit(commit_test, s.hashString);
+    string commit = merkle_commit(merkle_tree, s.hashString);
 
-    if (verbose) cout << commit << endl;
+    if (verbose) cout << "merkle commit: " << commit << endl;
+
+    vector<string> merkle_open_pos = merkle_open_position(merkle_tree, s.hashString, 3);
+
+    if (verbose) {
+    cout << "\nmerkle open position results:\n";
+    for (int i = 0; i < merkle_open_pos.size(); i++) {
+        cout << merkle_open_pos.at(i) << " ";
+    }
+    cout << endl;
+    }
 
     return 0;
 }
