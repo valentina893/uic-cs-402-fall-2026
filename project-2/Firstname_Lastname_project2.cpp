@@ -400,27 +400,27 @@ list=[ A, B,  C, D, E, F,   G, H ]
  *                  - merkle hash list_left, obtaining root_left   -- Same question, merkle hash list_left meaning?
  *                  - add root_left to the proof
 */
-vector<string> merkle_open_position(
+vector<pair<string,string>> merkle_open_position(
     const vector<string>& list, 
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
-    vector<string> proof;
-    if (list.size() != 1) {
+    vector<pair<string,string>> proof;
+    if (list.size() > 1) {
         auto middle = list.begin() + list.size() / 2;
         vector<string> list_left(list.begin(), middle);
         vector<string> list_right(middle, list.end());
         if (i < list_left.size()) {
             proof = merkle_open_position(list_left, hash_function, i / 2);
             string root_right = hash_function(list_right.at(0));
-            proof.push_back(root_right);
+            proof.push_back(pair<string, string>("right", root_right));
         } else {
             proof = merkle_open_position(list_right, hash_function, i / 2);
             string root_left = hash_function(list_left.at(0));
-            proof.push_back(root_left);
+            proof.push_back(pair<string, string>("left", root_left));
         }
-    } else {
-        proof.push_back(list.at(i));
+    } else if (list.size() == 1) {
+        proof.push_back(pair<string, string>("root", list.at(i)));
     }
     return proof;
 }
@@ -467,10 +467,15 @@ vector<string> merkle_open_position(
 
 int merkle_verify_position(
     const string root, 
-    const vector<string>& proof, 
+    const vector<pair<string,string>>& proof, 
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
+    //string h = hash_function(proof.at(0) + proof.at(1));
+    for (int i = 2; i < proof.size(); i++) {
+        // is proof.at(i) in left or right input to the hash function
+    }
+
     return 0;
 }
 
@@ -528,12 +533,12 @@ int main(int argc, char** argv) {
 
     if (verbose) cout << "merkle commit: " << commit << endl;
 
-    vector<string> merkle_open_pos = merkle_open_position(merkle_tree, s.hashString, 3);
+    vector<pair<string, string>> merkle_open_pos = merkle_open_position(merkle_tree, s.hashString, 3);
 
     if (verbose) {
     cout << "\nmerkle open position results:\n";
     for (int i = 0; i < merkle_open_pos.size(); i++) {
-        cout << merkle_open_pos.at(i) << " ";
+        cout << merkle_open_pos.at(i).first << " " << merkle_open_pos.at(i).second << endl;
     }
     cout << endl;
     }
