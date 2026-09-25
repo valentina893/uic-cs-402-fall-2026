@@ -406,18 +406,21 @@ vector<pair<string,string>> merkle_open_position(
     const unsigned int i
 ) {
     vector<pair<string,string>> proof;
+    if (i >= list.size()) return proof;
     if (list.size() > 1) {
         auto middle = list.begin() + list.size() / 2;
         vector<string> list_left(list.begin(), middle);
         vector<string> list_right(middle, list.end());
         if (i < list_left.size()) {
-            proof = merkle_open_position(list_left, hash_function, i / 2);
-            string root_right = hash_function(list_right.at(0));
-            proof.push_back(pair<string, string>("right", root_right));
+            proof = merkle_open_position(list_left, hash_function, i);
+            // compute hash of right subtree
+            string root_right = merkle_commit(list_right, hash_function);
+            proof.push_back(pair<string, string>("R", root_right));
         } else {
-            proof = merkle_open_position(list_right, hash_function, i / 2);
-            string root_left = hash_function(list_left.at(0));
-            proof.push_back(pair<string, string>("left", root_left));
+            proof = merkle_open_position(list_right, hash_function, i - list_left.size());
+            // compute hash of left subtree
+            string root_left = merkle_commit(list_left, hash_function);
+            proof.push_back(pair<string, string>("L", root_left));
         }
     } else if (list.size() == 1) {
         proof.push_back(pair<string, string>("root", list.at(i)));
@@ -471,12 +474,18 @@ int merkle_verify_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
-    //string h = hash_function(proof.at(0) + proof.at(1));
-    for (int i = 2; i < proof.size(); i++) {
-        // is proof.at(i) in left or right input to the hash function
+    string h = hash_function(proof.at(0).second + proof.at(1).second);
+    for (int idx = 2; idx < proof.size(); idx++) {
+        if (proof.at(idx).first == "L") { // left
+            h = hash_function(proof.at(idx).second + h);
+        } else { // right
+            h = hash_function(h + proof.at(idx).second);
+        }
     }
-
-    return 0;
+    cout << "final hash: " << h << endl;
+    cout << "root: " << root << endl;
+    if (h == root) return 0;
+    return -1;
 }
 
 
@@ -541,6 +550,14 @@ int main(int argc, char** argv) {
         cout << merkle_open_pos.at(i).first << " " << merkle_open_pos.at(i).second << endl;
     }
     cout << endl;
+    }
+
+    int verify_res = merkle_verify_position(merkle_commit(merkle_tree, s.hashString), merkle_open_pos, s.hashString, 3);
+
+    if (verify_res == 0) {
+        if (verbose) {
+            cout << "merkle verify position passed\n";
+        }
     }
 
     return 0;
