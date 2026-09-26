@@ -393,39 +393,95 @@ list=[ A, B,  C, D, E, F,   G, H ]
  *          - otherwise, divide the list into two halves: list_left, list_right.
  *              - if index i is in list_left:
  *                  - recurse on list_left
- *                  - merkle hash list_right, obtaining root_right -- What does it mean to merkle hash list_right?
+ *                  - merkle hash list_right, obtaining root_right
  *                  - add root_right to the proof
  *              - otherwise, index i is in list_right:
  *                  - recurse on list_right
- *                  - merkle hash list_left, obtaining root_left   -- Same question, merkle hash list_left meaning?
+ *                  - merkle hash list_left, obtaining root_left
  *                  - add root_left to the proof
 */
+
+string merkle_commit2(const vector<string>& list, function<string(string)> hash_function) {
+    if (list.size() >= 1) {
+        vector<string> curr_level;
+        for (int i = 0; i < list.size(); i++) {
+            string to_hash = list.at(i);
+            //curr_level.push_back(hash_function(to_hash));
+            curr_level.push_back(to_hash);
+        }
+        while (curr_level.size() > 1) {
+            vector<string> next_level;
+            if (curr_level.size() % 2 != 0) {
+                curr_level.push_back(curr_level.at(curr_level.size()-1));
+            }
+            for (int i = 0; i < curr_level.size(); i += 2) {
+                string combined = curr_level.at(i) + curr_level.at(i+1);
+                next_level.push_back(hash_function(combined));
+            }
+            curr_level = next_level;
+        }
+        return curr_level.at(0);
+    }
+    return "";
+}
+
+void make_proof(vector<string> list, unsigned int i, vector<pair<string,string>>& proof, function<string(string)> hash_function) {
+    // check if we are done recursing
+    if (list.size() == 1) {
+        //proof.push_back(pair<string,string>("root", list.at(i)));
+        return;
+    }
+    // divide list into two halves
+    auto middle = list.begin() + list.size() / 2;
+    vector<string> list_left(list.begin(), middle);
+    vector<string> list_right(middle, list.end());
+    // check where index i is in terms of sublists
+    if (i < list_left.size()) { // i is in left sublist
+        // recurse on left sublist
+        make_proof(list_left, i, proof, hash_function);
+        // hash right sublist, issue resides with how we hash the right subtree
+        string root_right = merkle_commit2(list_right, hash_function);
+        // add root of right subtree to proof
+        proof.push_back(pair<string,string>("R", root_right));
+    } else { // i is in right sublist
+        // recurse on right sublist
+        make_proof(list_right, i - list_left.size(), proof, hash_function);
+        // hash left sublist
+        string root_left = merkle_commit2(list_left, hash_function);
+        // add root of left subtree to proof
+        proof.push_back(pair<string,string>("L", root_left));
+    }
+}
+
 vector<pair<string,string>> merkle_open_position(
     const vector<string>& list, 
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
     vector<pair<string,string>> proof;
-    if (i >= list.size()) return proof;
-    if (list.size() > 1) {
-        auto middle = list.begin() + list.size() / 2;
-        vector<string> list_left(list.begin(), middle);
-        vector<string> list_right(middle, list.end());
-        if (i < list_left.size()) {
-            proof = merkle_open_position(list_left, hash_function, i);
-            // compute hash of right subtree
-            string root_right = merkle_commit(list_right, hash_function);
-            proof.push_back(pair<string, string>("R", root_right));
-        } else {
-            proof = merkle_open_position(list_right, hash_function, i - list_left.size());
-            // compute hash of left subtree
-            string root_left = merkle_commit(list_left, hash_function);
-            proof.push_back(pair<string, string>("L", root_left));
-        }
-    } else if (list.size() == 1) {
-        proof.push_back(pair<string, string>("root", list.at(i)));
+
+    if (i >= list.size()) {
+        return proof;
     }
+
+    if (i < list.size() / 2) {
+        proof.push_back(pair<string, string>("L", list.at(i)));
+    } else {
+        proof.push_back(pair<string, string>("R", list.at(i)));
+    }
+    
+    vector<string> leaf_hashes;
+
+    // create leaf hashes to preserve original indices of a0, b1, c2, ..., h7
+    for (int i = 0; i < list.size(); i++) {
+        leaf_hashes.push_back(hash_function(list.at(i) + to_string(i)));
+    }
+
+    // call recursive helper function
+    make_proof(leaf_hashes, i, proof, hash_function);
+    
     return proof;
+
 }
 
 
@@ -474,17 +530,21 @@ int merkle_verify_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
-    string h = hash_function(proof.at(0).second + proof.at(1).second);
-    for (int idx = 2; idx < proof.size(); idx++) {
-        if (proof.at(idx).first == "L") { // left
-            h = hash_function(proof.at(idx).second + h);
-        } else { // right
-            h = hash_function(h + proof.at(idx).second);
+    if (root != "") {
+        if (proof.size() > 0) {
+            string h = hash_function(proof.at(0).second + to_string(i));
+            for (int i = 1; i < proof.size(); i++) {
+                if (proof.at(i).first == "L") {
+                    h = hash_function(proof.at(i).second + h);
+                } else {
+                    h = hash_function(h + proof.at(i).second);
+                }
+            }
+            if (h == root) {
+                return 0;
+            }
         }
     }
-    cout << "final hash: " << h << endl;
-    cout << "root: " << root << endl;
-    if (h == root) return 0;
     return -1;
 }
 
@@ -513,7 +573,41 @@ int merkle_verify_full(const string root, const vector<std::string> list) {
     return 0;
 }
 
+// Merkle root and proofs with respect to the below test_vec's.
+// All tests are with respect to the hash function 
+// SHA256::hashString(const std::string& str) defined in sha256.h.
+const vector<string> test_vec1 {"a", "b", "c", "d", "e", "f", "g", "h" };
+const string test_vec1_merkle_root = "03d17ec0ddabb9af008dce3964169c576491f112481ef00d1e1ed93f8ff36673";
 
+// Merkle proof for test_vec1[2] = "c"
+const vector<pair<string,string>> test_vec1_proof_of_2 = {
+    {"L",test_vec1[2]},
+    {"R","f451a61749c611ba0fa0e16c61831db44f38c611dff25879cf271a24c81a88b6"}, // SHA256::hashString("d3")
+    {"L","09fc26616cb10a1249d12c2ce0837e194f90a0f737d474ae827e50be5fbcafe8"}, // SHA256::hashString( SHA256::hashString("a0") + SHA256::hashString("b1") )
+    {"R","3b73ae5b262f6e0c074cb04d9487ecd34ca2058722deb80cae9576d8365218a5"}, // SHA256::hashString( SHA256::hashString(SHA256::hashString("e4") + SHA256::hashString("f5")) + SHA256::hashString(SHA256::hashString("g6") + SHA256::hashString("h7"))  )
+};
+
+// above was generated using the following link and sha256 to get the complete hashes for each proof
+// https://www.cipherdecipher.com/tools/merkle-tree-calculator?input=a0%0Ab1%0Ac2%0Ad3%0Ae4%0Af5%0Ag6%0Ah7&proof=1&idx=2
+
+const vector<string> test_vec2 = {"hello", "world!"};
+const string test_vec2_merkle_root = "45bc2c583b1d8ebb501fcc2f29d0330f316649bbf23d76feee22b64e6b67972b";
+// Merkle proof for test_vec2[1] = "world!"
+const vector<pair<string,string>> test_vec2_proof_of_1 = {
+    {"R", test_vec2[1]},
+    {"L", "5a936ee19a0cf3c70d8cb0006111b7a52f45ec01703e0af8cdc8c6d81ac5850c"}
+};
+// see https://www.cipherdecipher.com/tools/merkle-tree-calculator?input=hello0%0Aworld%211&proof=1&idx=1
+
+const vector<string> test_vec3 = {"Merkle", "trees", "are", "cool!"};
+const string test_vec3_merkle_root = "4683d51abcd4e5b01faec86dd4efaca78e669176d10a3f047c90790bab793cc2";
+// Merkle proof for test_vec3[3]
+const vector<pair<string,string>> test_vec3_proof_of_3 = {
+    {"R", test_vec3[3]},
+    {"L", "07b83ebd03651aa06a3e788f04cf1875a063005f2bece50e46cd8d3736bfa23d"},
+    {"L", "d60697595896c2a90bcffa77d76dd7cd25b46034d7c7f2310b692c9d97d53624"}
+};
+// see https://www.cipherdecipher.com/tools/merkle-tree-calculator?input=Merkle0%0Atrees1%0Aare2%0Acool%213&proof=1&idx=3
 
 int main(int argc, char** argv) {
 
@@ -528,36 +622,92 @@ int main(int argc, char** argv) {
     vector<unsigned int> bday1 = birthday_attack_1(test_hash);
     vector<unsigned int> bday2 = birthday_attack_2(test_hash);
 
-    vector<string> merkle_tree = {"a", "b", "c", "d"};
+    string commit = merkle_commit(test_vec1, s.hashString);
 
+    if (verbose) cout << "\nmerkle commit: " << commit << endl;
+    if (verbose) cout << "expected: " << test_vec1_merkle_root << endl;
     if (verbose) {
-    cout << "\ntesting merkle methods with merkle tree:\n";
-    for (int i = 0; i < merkle_tree.size(); i++) {
-        cout << merkle_tree.at(i) << " ";
-    }
-    cout << endl;
-    }
-
-    string commit = merkle_commit(merkle_tree, s.hashString);
-
-    if (verbose) cout << "merkle commit: " << commit << endl;
-
-    vector<pair<string, string>> merkle_open_pos = merkle_open_position(merkle_tree, s.hashString, 3);
-
-    if (verbose) {
-    cout << "\nmerkle open position results:\n";
-    for (int i = 0; i < merkle_open_pos.size(); i++) {
-        cout << merkle_open_pos.at(i).first << " " << merkle_open_pos.at(i).second << endl;
-    }
-    cout << endl;
-    }
-
-    int verify_res = merkle_verify_position(merkle_commit(merkle_tree, s.hashString), merkle_open_pos, s.hashString, 3);
-
-    if (verify_res == 0) {
-        if (verbose) {
-            cout << "merkle verify position passed\n";
+        if (commit != test_vec1_merkle_root) {
+            cout << "incorrect root\n";
         }
+    }
+
+    commit = merkle_commit(test_vec2, s.hashString);
+
+    if (verbose) cout << "\nmerkle commit: " << commit << endl;
+    if (verbose) cout << "expected: " << test_vec2_merkle_root << endl;
+    if (verbose) {
+        if (commit != test_vec2_merkle_root) {
+            cout << "incorrect root\n";
+        }
+    }
+
+    commit = merkle_commit(test_vec3, s.hashString);
+
+    if (verbose) cout << "\nmerkle commit: " << commit << endl;
+    if (verbose) cout << "expected: " << test_vec3_merkle_root << endl;
+    if (verbose) {
+        if (commit != test_vec3_merkle_root) {
+            cout << "incorrect root\n";
+        }
+    }
+
+    vector<pair<string, string>> proof = merkle_open_position(test_vec1, s.hashString, 2);
+
+    if (verbose) {
+        cout << "result proof:\n";
+        for (int i = 0; i < proof.size(); i++) {
+            cout << proof.at(i).first << " " << proof.at(i).second << endl;
+            if (proof.at(i).first != test_vec1_proof_of_2.at(i).first) {
+                cout << "incorrect position:\n";
+                cout << "expected: " << test_vec1_proof_of_2.at(i).first << endl;
+                cout << "result: " << proof.at(i).first << endl;
+            }
+            if (proof.at(i).second != test_vec1_proof_of_2.at(i).second) {
+                cout << "incorrect hash:\n";
+                cout << "expected: " << test_vec1_proof_of_2.at(i).second << endl;
+                cout << "result: " << proof.at(i).second << endl;
+            }
+        }
+    }
+
+    if (verbose) {
+        cout << "expected proof:\n";
+        for (int i = 0; i < test_vec1_proof_of_2.size(); i++) {
+            cout << test_vec1_proof_of_2.at(i).first << " " << test_vec1_proof_of_2.at(i).second << endl;
+        }
+    }
+
+    cout << endl;
+
+    vector<pair<string, string>> proof2 = merkle_open_position(test_vec2, s.hashString, 1);
+
+    for (int i = 0; i < proof2.size(); i++) {
+            cout << proof2.at(i).first << " " << proof2.at(i).second << endl;
+            if (proof2.at(i).first != test_vec2_proof_of_1.at(i).first) {
+                cout << "incorrect position:\n";
+                cout << "expected: " << test_vec2_proof_of_1.at(i).first << endl;
+                cout << "result: " << proof2.at(i).first << endl;
+            }
+            if (proof2.at(i).second != test_vec2_proof_of_1.at(i).second) {
+                cout << "incorrect hash:\n";
+                cout << "expected: " << test_vec2_proof_of_1.at(i).second << endl;
+                cout << "result: " << proof2.at(i).second << endl;
+            }
+    }
+
+    cout << endl;
+    int res1 = merkle_verify_position(test_vec2_merkle_root, test_vec2_proof_of_1, s.hashString, 1);
+
+    if (res1 != 0) {
+        cout << "could not verify proof leads to same root\n";
+    }
+
+    cout << endl;
+    int res2 = merkle_verify_position(test_vec1_merkle_root, test_vec1_proof_of_2, s.hashString, 2);
+
+    if (res2 != 0) {
+        cout << "could not verify proof leads to same root\n";
     }
 
     return 0;
