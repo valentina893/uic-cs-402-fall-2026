@@ -569,8 +569,14 @@ int merkle_verify_position(
  *          size n, where n is NOT a power of 2.
  */
 
-int merkle_verify_full(const string root, const vector<std::string> list) {
-    return 0;
+int merkle_verify_full(const string root, const vector<std::string> list, function<string(string)> hash_function) {
+    if (root != "") {
+        if (list.size() > 0) {
+            string expected_root = merkle_commit(list, hash_function);
+            if (root == expected_root) return 0;
+        }
+    }
+    return -1;
 }
 
 // Merkle root and proofs with respect to the below test_vec's.
@@ -708,6 +714,12 @@ int main(int argc, char** argv) {
 
     if (res2 != 0) {
         cout << "could not verify proof leads to same root\n";
+    }
+
+    int final = merkle_verify_full(test_vec1_merkle_root, test_vec1, s.hashString);
+
+    if (final != 0) {
+        cout << "verify full failed\n";
     }
 
     return 0;
