@@ -370,7 +370,27 @@ vector<pair<string,string>> merkle_open_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
+    vector<pair<string,string>> proof;
+
+    if (i >= list.size()) {
+        return proof;
+    }
+
+    if (i < list.size() / 2) {
+        proof.push_back(pair<string, string>("L", list.at(i)));
+    } else {
+        proof.push_back(pair<string, string>("R", list.at(i)));
+    }
     
+    // create leaf hashes to preserve original indices of a0, b1, c2, ..., h7
+    vector<string> leaf_hashes;
+    for (int i = 0; i < list.size(); i++) {
+        leaf_hashes.push_back(hash_function(list.at(i) + to_string(i)));
+    }
+
+    // call recursive helper function
+    make_proof(leaf_hashes, i, proof, hash_function);
+    return proof;
 }
 
 string merkle_commit2(const vector<string>& list, function<string(string)> hash_function) {
