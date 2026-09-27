@@ -624,6 +624,24 @@ int test_bday2() {
     return (100*(score / total_score));
 }
 
+int test_merkle_commit(std::vector<std::vector<std::string>> trees, 
+    std::vector<std::string> roots,
+    std::function<std::string(std::string)> hash_function
+) {
+    if (trees.size() == roots.size()) {
+        for (int i = 0; i < trees.size(); i++) {
+            string res = merkle_commit(trees.at(i), hash_function);
+            if (res != roots.at(i)) {
+                cout << "merkle commit error:\n";
+                cout << "expected: " << roots.at(i) << endl;
+                cout << "computed: " << res << endl;
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
 // Here are some tests to check if you are correctly computing the
 // Merkle root and proofs with respect to the below test_vec's.
 // All tests are with respect to the hash function 
@@ -669,11 +687,18 @@ const vector<pair<string,string>> test_vec3_proof_of_3 = {
 
 int main() {
 
+    SHA256 s;
+
     cout << "birthday attack 1 test:\n";
     cout << test_bday1() << endl;
 
     cout << "birthday attack 2 test:\n";
     cout << test_bday2() << endl;
+
+    vector<vector<string>> trees = {test_vec1, test_vec2, test_vec3};
+    vector<string> roots = {test_vec1_merkle_root, test_vec2_merkle_root, test_vec3_merkle_root};
+    int res = test_merkle_commit(trees, roots, s.hashString);
+    if (res == 0) cout << "merkle_commit passed\n";
 
     return 0;
 }
