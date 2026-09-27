@@ -16,10 +16,14 @@ int merkle_verify_position(const std::string root, const std::vector<std::pair<s
 int merkle_verify_full(const std::string root, const std::vector<std::string> list, std::function<std::string(std::string)> hash_function);
 
 // helper functions
+std::string merkle_commit2(const std::vector<std::string>& list, std::function<std::string(std::string)> hash_function);
+void make_proof(std::vector<std::string> list, unsigned int i, std::vector<std::pair<std::string,std::string>>& proof, std::function<std::string(std::string)> hash_function);
+
 
 // test functions
-int test_bday1(std::function<unsigned short(unsigned int)> hash_function);
-int test_bday2(std::function<unsigned short(unsigned int)> hash_function);
+int test_bday1();
+int test_bday2();
+int test_merkle_commit();
 
 
 #endif
