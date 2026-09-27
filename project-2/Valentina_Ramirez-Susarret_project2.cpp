@@ -522,6 +522,13 @@ int merkle_verify_position(
  */
 
 int merkle_verify_full(const string root, const vector<std::string>& list, function<string(string)> hash_function) {
+    if (root != "") {
+        if (list.size() > 0) {
+            string expected_root = merkle_commit(list, hash_function);
+            if (root == expected_root) return 0;
+        }
+    }
+    return -1;
 }
 
 int test_bday1() {
