@@ -642,6 +642,32 @@ int test_merkle_commit(std::vector<std::vector<std::string>> trees,
     return 0;
 }
 
+int test_merkle_open_position(std::vector<std::vector<std::string>> trees, 
+    std::vector<unsigned int> indices,
+    std::vector<std::vector<std::pair<std::string, std::string>>> proofs,
+    std::function<std::string(std::string)> hash_function
+) {
+    if (trees.size() == indices.size()) {
+        for (int i = 0; i < trees.size(); i++) {
+            vector<pair<string, string>> proof = merkle_open_position(trees.at(i), hash_function, indices.at(i));
+            if (proof.size() != proofs.at(i).size()) {
+                cout << "merkle open position error: incorrect proof size\n";
+                return -1;
+            }
+            for (int j = 0; j < proofs.at(i).size(); j++) {
+                if (proof.at(j).first != proofs.at(i).at(j).first) {
+                    cout << "merkle open position error: incorrect sibling position\n";
+                    return -1;
+                } else if (proof.at(j).second != proofs.at(i).at(j).second) {
+                    cout << "merkle open position error: incorrect hash\n";
+                    return -1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 int test_merkle_verify_position(std::vector<std::string> roots, 
     std::vector<std::vector<std::pair<std::string, std::string>>> proofs, 
     std::vector<unsigned int> indices, 
@@ -717,9 +743,11 @@ int main() {
     int res = test_merkle_commit(trees, roots, s.hashString);
     if (res == 0) cout << "merkle_commit passed\n";
 
-    roots = {test_vec1_merkle_root, test_vec2_merkle_root, test_vec3_merkle_root};
     vector<vector<pair<string,string>>> proofs = {test_vec1_proof_of_2, test_vec2_proof_of_1, test_vec3_proof_of_3};
     vector<unsigned int> indices = {2, 1, 3};
+    res = test_merkle_open_position(trees, indices, proofs, s.hashString);
+    if (res == 0) cout << "merkle_open_position passed\n";
+    
     res = test_merkle_verify_position(roots, proofs, indices, s.hashString);
     if (res == 0) cout << "merkle_verify_position passed\n";
 
