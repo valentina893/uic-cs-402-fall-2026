@@ -483,6 +483,22 @@ int merkle_verify_position(
     function<string(string)> hash_function, 
     const unsigned int i
 ) {
+    if (root != "") {
+        if (proof.size() > 0) {
+            string h = hash_function(proof.at(0).second + to_string(i));
+            for (int i = 1; i < proof.size(); i++) {
+                if (proof.at(i).first == "L") {
+                    h = hash_function(proof.at(i).second + h);
+                } else {
+                    h = hash_function(h + proof.at(i).second);
+                }
+            }
+            if (h == root) {
+                return 0;
+            }
+        }
+    }
+    return -1;
 }
 
 
