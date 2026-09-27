@@ -633,8 +633,25 @@ int test_merkle_commit(std::vector<std::vector<std::string>> trees,
             string res = merkle_commit(trees.at(i), hash_function);
             if (res != roots.at(i)) {
                 cout << "merkle commit error:\n";
-                cout << "expected: " << roots.at(i) << endl;
-                cout << "computed: " << res << endl;
+                cout << "expected root: " << roots.at(i) << endl;
+                cout << "computed root: " << res << endl;
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
+int test_merkle_verify_position(std::vector<std::string> roots, 
+    std::vector<std::vector<std::pair<std::string, std::string>>> proofs, 
+    std::vector<unsigned int> indices, 
+    std::function<std::string(std::string)> hash_function
+) {
+    if (proofs.size() == roots.size() && indices.size() == roots.size()) {
+        for (int i = 0; i < proofs.size(); i++) {
+            int res = merkle_verify_position(roots.at(i), proofs.at(i), hash_function, indices.at(i));
+            if (res != 0) {
+                cout << "merkle verify position error: wrong proof generated\n";
                 return -1;
             }
         }
@@ -699,6 +716,12 @@ int main() {
     vector<string> roots = {test_vec1_merkle_root, test_vec2_merkle_root, test_vec3_merkle_root};
     int res = test_merkle_commit(trees, roots, s.hashString);
     if (res == 0) cout << "merkle_commit passed\n";
+
+    roots = {test_vec1_merkle_root, test_vec2_merkle_root, test_vec3_merkle_root};
+    vector<vector<pair<string,string>>> proofs = {test_vec1_proof_of_2, test_vec2_proof_of_1, test_vec3_proof_of_3};
+    vector<unsigned int> indices = {2, 1, 3};
+    res = test_merkle_verify_position(roots, proofs, indices, s.hashString);
+    if (res == 0) cout << "merkle_verify_position passed\n";
 
     return 0;
 }
