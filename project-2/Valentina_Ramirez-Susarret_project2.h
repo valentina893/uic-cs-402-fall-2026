@@ -23,7 +23,7 @@ void make_proof(std::vector<std::string> list, unsigned int i, std::vector<std::
 // test functions
 int test_bday1();
 int test_bday2();
-int test_merkle_commit(std::vector<std::vector<std::string>> trees, std::vector<std::string> roots);
+int test_merkle_commit(std::vector<std::vector<std::string>> trees, std::vector<std::string> roots, std::function<std::string(std::string)> hash_function);
 
 
 #endif
