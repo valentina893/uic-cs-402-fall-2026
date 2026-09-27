@@ -521,7 +521,7 @@ int merkle_verify_position(
  *          size n, where n is NOT a power of 2.
  */
 
-int merkle_verify_full(const string root, const vector<std::string>& list, function<string(string)> hash_function) {
+int merkle_verify_full(const string root, const vector<string>& list, function<string(string)> hash_function) {
     if (root != "") {
         if (list.size() > 0) {
             string expected_root = merkle_commit(list, hash_function);
@@ -692,6 +692,23 @@ int test_merkle_verify_position(std::vector<std::string> roots,
     return 0;
 }
 
+int test_merkle_verify_full(std::vector<std::string> roots, 
+    std::vector<std::vector<std::string>> trees, 
+    std::function<std::string(std::string)> hash_function
+) {
+    if (trees.size() == roots.size()) {
+        for (int i = 0; i < trees.size(); i++) {
+            //int res = 0;//merkle_verify_full(roots.at(i), trees.at(i), hash_function);
+            int res = merkle_verify_full(roots.at(i), trees.at(i), hash_function);
+            if (res != 0) {
+                cout << "merkle verify full error\n";
+                return -1;
+            }
+        }
+    }
+    return 0; 
+}
+
 // Here are some tests to check if you are correctly computing the
 // Merkle root and proofs with respect to the below test_vec's.
 // All tests are with respect to the hash function 
@@ -757,6 +774,9 @@ int main() {
     
     res = test_merkle_verify_position(roots, proofs, indices, s.hashString);
     if (res == 0) cout << "merkle_verify_position passed\n";
+
+    res = test_merkle_verify_full(roots, trees, s.hashString);
+    if (res == 0) cout << "merkle_verify_full passed\n";
 
     return 0;
 }
