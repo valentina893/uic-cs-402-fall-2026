@@ -24,7 +24,7 @@ void make_proof(std::vector<std::string> list, unsigned int i, std::vector<std::
 int test_bday1();
 int test_bday2();
 int test_merkle_commit(std::vector<std::vector<std::string>> trees, std::vector<std::string> roots, std::function<std::string(std::string)> hash_function);
-int test_merkle_open_position(std::vector<std::vector<std::string>> trees, std::vector<unsigned int> indices, std::function<std::string(std::string)> hash_function);
+int test_merkle_open_position(std::vector<std::vector<std::string>> trees, std::vector<unsigned int> indices, std::vector<std::vector<std::pair<std::string, std::string>>> proofs, std::function<std::string(std::string)> hash_function);
 int test_merkle_verify_position(std::vector<std::string> roots, std::vector<std::vector<std::pair<std::string, std::string>>> proofs, std::vector<unsigned int> indices, std::function<std::string(std::string)> hash_function);
 
 #endif
