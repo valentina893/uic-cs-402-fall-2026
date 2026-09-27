@@ -180,6 +180,32 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
     // signatures match the `test_hash` function signature.
     
     // Your code here!
+    vector<unsigned int> res;
+
+    unsigned short tort = hash_function(0);
+    unsigned short hare = hash_function(hash_function(0));
+    size_t i = 0;
+
+    while (tort != hare) {
+        // tort takes 1 step, hare takes two steps
+        tort = hash_function(tort);
+        hare = hash_function(hash_function(hare));
+        i++;
+    }
+
+    // reset tort
+    tort = 0;
+    i = 0;
+
+    while (hash_function(tort) != hash_function(hare)) {
+        // both take 1 step
+        tort = hash_function(tort);
+        hare = hash_function(hare);
+        i++;
+    }
+    res.push_back(tort);
+    res.push_back(hare);
+    return res;
 }
 
 
