@@ -396,6 +396,23 @@ string merkle_commit2(const vector<string>& list, function<string(string)> hash_
     return "";
 }
 
+void make_proof(vector<string> list, unsigned int i, vector<pair<string,string>>& proof, function<string(string)> hash_function) {
+    // check if we are done recursing
+    if (list.size() == 1) return;
+    // divide list into two halves
+    auto middle = list.begin() + list.size() / 2;
+    vector<string> list_left(list.begin(), middle);
+    vector<string> list_right(middle, list.end());
+    if (i < list_left.size()) { // i is in left sublist
+        make_proof(list_left, i, proof, hash_function);
+        string root_right = merkle_commit2(list_right, hash_function);
+        proof.push_back(pair<string,string>("R", root_right));
+    } else { // i is in right sublist
+        make_proof(list_right, i - list_left.size(), proof, hash_function);
+        string root_left = merkle_commit2(list_left, hash_function);
+        proof.push_back(pair<string,string>("L", root_left));
+    }
+}
 
 
  /* 3. The Positional Verify Algorithm (15 points)
