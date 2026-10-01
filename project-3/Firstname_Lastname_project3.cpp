@@ -427,7 +427,7 @@ bool test_infix_to_postfix() {
     string test5 = "";
 
     string error;
-    bool passed;
+    bool passed = true;
 
     string res1 = infix_to_postfix(test1);
     string exp1 = "cab^|";
@@ -484,12 +484,58 @@ bool test_infix_to_postfix() {
     return passed;
 }
 
+bool test_build_parse_tree() {
+    string test1 = "c | (a ^ b)";
+    string test2 = "a | b ^ c";
+    string test3 = "~(A ^ b) ^ (c | ~z)";
+
+    string error;
+    bool passed = true;
+
+    ParseTreeNode* tree1 = build_parse_tree(test1);
+    string res1;
+    preorder(tree1, res1);
+    string exp1 = "|c^ab";
+    if (res1 != exp1) {
+        passed = false;
+        error += "test1 failed:\n";
+        error += "input: " + test1 + "\n";
+        error += "expected: " + exp1 + "\n";
+        error += "result: " + res1 + "\n";
+    }
+
+    ParseTreeNode* tree2 = build_parse_tree(test2);
+    string res2;
+    preorder(tree2, res2);
+    string exp2 = "^|abc";
+    if (res2 != exp2) {
+        passed = false;
+        error += "test2 failed:\n";
+        error += "input: " + test2 + "\n";
+        error += "expected: " + exp2 + "\n";
+        error += "result: " + res2 + "\n";
+    }
+
+    ParseTreeNode* tree3 = build_parse_tree(test3);
+    string res3;
+    preorder(tree3, res3);
+    string exp3 = "^~^Ab|c~z";
+    if (res3 != exp3) {
+        passed = false;
+        error += "test3 failed:\n";
+        error += "input: " + test3 + "\n";
+        error += "expected: " + exp3 + "\n";
+        error += "result: " + res3 + "\n";
+    }
+
+    if (!passed) cout << "build_parse_tree errors:\n";
+    cout << error;
+    return passed;
+}
+
 int main() {
 
-    ParseTreeNode* res = build_parse_tree("a ^ b");
-
-    string buff;
-    cout << preorder(res, buff) << endl;
+    test_build_parse_tree();
 
     return 0;
 }
