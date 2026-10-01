@@ -318,8 +318,39 @@ TreeNode* bits_to_tree(const vector<bool>& bits) {
 ParseTreeNode* build_parse_tree(const string& expr) {
     // convert the infix expression to a postfix expression
     string postfix = infix_to_postfix(expr);
-    cout << postfix << endl;
-    return NULL;
+    // convert to parse tree
+    return build_tree_from_postfix(postfix);
+}
+
+ParseTreeNode* build_tree_from_postfix(const string& postfix) {
+    stack<ParseTreeNode*> s;
+    ParseTreeNode* right_child = NULL;
+    ParseTreeNode* left_child = NULL;
+    for (int i = 0; i < postfix.size(); i++) {
+        char c = postfix.at(i);
+        switch (c) {
+            case '^': // and
+            case '|': // or
+                //ParseTreeNode* right_child = s.top();
+                right_child = s.top();
+                s.pop();
+                //ParseTreeNode* left_child = s.top();
+                left_child = s.top();
+                s.pop();
+                s.push(new ParseTreeNode(c, left_child, right_child));
+                break;
+            case '~': // not
+                //ParseTreeNode* left_child = s.top();
+                left_child = s.top();
+                s.pop();
+                s.push(new ParseTreeNode(c, left_child, NULL));
+                break;
+            default: // operand
+                s.push(new ParseTreeNode(c, NULL, NULL));
+                break;
+        }
+    }
+    return s.top();
 }
 
 string infix_to_postfix(const string& infix) {
@@ -455,7 +486,10 @@ bool test_infix_to_postfix() {
 
 int main() {
 
-    test_infix_to_postfix();
+    ParseTreeNode* res = build_parse_tree("a ^ b");
+
+    string buff;
+    cout << preorder(res, buff) << endl;
 
     return 0;
 }
