@@ -314,8 +314,35 @@ TreeNode* bits_to_tree(const vector<bool>& bits) {
 
 // Do not modify this function signature
 ParseTreeNode* build_parse_tree(const string& expr) {
+    for (int i = 0; i < expr.size(); i++) {
+        char c = expr.at(i);
+        switch (c) {
+            case '^': // and
+                break;
+            case '|': // or
+                break;
+            case '~': // not
+                break;
+            case '(': // left parentheses
+                break;
+            case ')': // right parentheses
+                break;
+            default: // operand
+                break;
+        }
+    }
 }
 
+int prec(const char& c) {
+    switch (c) {
+        case '^':
+        case '|': return 1;
+        case '~': return 2;
+        case '(':
+        case ')': return 3;
+        default: return 0;
+    }
+}
 
 int main() {
 
