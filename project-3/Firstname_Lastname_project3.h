@@ -33,6 +33,9 @@ TreeNode* bits_to_tree(const vector<bool>& bits);
 
 // helpers
 
+// converts infix expression to postfix expression
+string infix_to_postfix(const string& infix);
+
 // returns the precedence of a token
 int prec(const char& c);
 
