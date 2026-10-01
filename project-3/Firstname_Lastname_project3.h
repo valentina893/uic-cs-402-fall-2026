@@ -30,6 +30,11 @@ struct ParseTreeNode {
 vector<int> weird_traversal(TreeNode* root);
 TreeNode* bits_to_tree(const vector<bool>& bits);
 
+// helpers
+
+// returns the precedence of a token
+int prec(const char& c);
+
 #endif
 
 
