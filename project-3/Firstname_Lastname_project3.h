@@ -52,6 +52,10 @@ a left parentheses character is found.
 */
 void find_left_parentheses(stack<char>& s, string& postfix);
 
+// unit test function declarations
+
+bool test_infix_to_postfix();
+
 #endif
 
 
