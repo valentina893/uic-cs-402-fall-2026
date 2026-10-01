@@ -314,23 +314,28 @@ TreeNode* bits_to_tree(const vector<bool>& bits) {
 
 // Do not modify this function signature
 ParseTreeNode* build_parse_tree(const string& expr) {
+    // convert the infix expression to a postfix expression
+    stack<char> s;
+    string postfix;
     for (int i = 0; i < expr.size(); i++) {
         char c = expr.at(i);
         switch (c) {
             case '^': // and
-                break;
             case '|': // or
-                break;
             case '~': // not
+                handle_operator(s, postfix, c);
                 break;
             case '(': // left parentheses
+                s.push(c);
                 break;
             case ')': // right parentheses
                 break;
             default: // operand
+                postfix += c;
                 break;
         }
     }
+    return NULL;
 }
 
 int prec(const char& c) {
@@ -342,6 +347,19 @@ int prec(const char& c) {
         case ')': return 3;
         default: return 0;
     }
+}
+
+void handle_operator(stack<char>& s, string& postfix, char& c) {
+    // pop operators from the stack until empty, left parentheses is found, 
+    // or token with precedence < than c is found.
+    while (s.size() > 0 && s.top() != '(' &&
+        prec(s.top()) >= prec(c) 
+    ) {
+        postfix += s.top();
+        s.pop();
+    }
+    // push c to stack
+    s.push(c);
 }
 
 int main() {
