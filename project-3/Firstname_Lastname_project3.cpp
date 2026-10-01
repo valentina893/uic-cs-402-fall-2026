@@ -138,6 +138,7 @@ const string who_am_i() {
 // Do not modify this function signature.
 vector<int> weird_traversal(TreeNode* root) {
     // Your code here!
+    return vector<int>();
 }
 
 
@@ -207,6 +208,7 @@ vector<int> weird_traversal(TreeNode* root) {
 
 // Do not modify this fuction signature
 TreeNode* bits_to_tree(const vector<bool>& bits) {
+    return NULL;
 }
 
 
@@ -338,6 +340,8 @@ string infix_to_postfix(const string& infix) {
             case ')': // right parentheses
                 find_left_parentheses(s, postfix);
                 break;
+            case ' ': // white space
+                break;
             default: // operand
                 postfix += c;
                 break;
@@ -384,7 +388,74 @@ void find_left_parentheses(stack<char>& s, string& postfix) {
     s.pop();
 }
 
+bool test_infix_to_postfix() {
+    string test1 = "c | (a ^ b)";
+    string test2 = "a | b ^ c";
+    string test3 = "~(A ^ b) ^ (c | ~z)";
+    string test4 = "~(A ^ (c | ~(d ^ e) ^ F) | ~z)";
+    string test5 = "";
+
+    string error;
+    bool passed;
+
+    string res1 = infix_to_postfix(test1);
+    string exp1 = "cab^|";
+    if (res1 != exp1) {
+        passed = false;
+        error += "test1 failed:\n";
+        error += "input: " + test1 + "\n";
+        error += "expected: " + exp1 + "\n";
+        error += "result: " + res1 + "\n";
+    }
+
+    string res2 = infix_to_postfix(test2);
+    string exp2 = "ab|c^";
+    if (res2 != exp2) {
+        passed = false;
+        error += "test2 failed:\n";
+        error += "input: " + test2 + "\n";
+        error += "expected: " + exp2 + "\n";
+        error += "result: " + res2 + "\n";
+    }
+
+    string res3 = infix_to_postfix(test3);
+    string exp3 = "Ab^~cz~|^";
+    if (res3 != exp3) {
+        passed = false;
+        error += "test3 failed:\n";
+        error += "input: " + test3 + "\n";
+        error += "expected: " + exp3 + "\n";
+        error += "result: " + res3 + "\n";
+    }
+
+    string res4 = infix_to_postfix(test4);
+    string exp4 = "Acde^F^~|z~|^~";
+    if (res4 != exp4) {
+        passed = false;
+        error += "test4 failed:\n";
+        error += "input: " + test4 + "\n";
+        error += "expected: " + exp4 + "\n";
+        error += "result: " + res4 + "\n";
+    }
+
+    string res5 = infix_to_postfix(test5);
+    string exp5 = "";
+    if (res5 != exp5) {
+        passed = false;
+        error += "test5 failed:\n";
+        error += "input: " + test5 + "\n";
+        error += "expected: " + exp5 + "\n";
+        error += "result: " + res5 + "\n";
+    }
+
+    if (!passed) cout << "infix_to_postfix errors:\n";
+    cout << error;
+    return passed;
+}
+
 int main() {
+
+    test_infix_to_postfix();
 
     return 0;
 }
