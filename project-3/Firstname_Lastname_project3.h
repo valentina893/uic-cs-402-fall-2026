@@ -47,7 +47,7 @@ void handle_operator(stack<char>& s, string& postfix, char& c);
 pops operators from stack and pushes to postfix until
 a left parentheses character is found.
 */
-void find_left_parentheses();
+void find_left_parentheses(stack<char>& s, string& postfix);
 
 #endif
 
