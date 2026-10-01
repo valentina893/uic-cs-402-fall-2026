@@ -3,6 +3,7 @@
 #define FIRSTNAME_LASTNAME_PROJECT3
 
 #include <vector>
+#include <stack>
 #include <string>
 
 using namespace std;
@@ -34,6 +35,19 @@ TreeNode* bits_to_tree(const vector<bool>& bits);
 
 // returns the precedence of a token
 int prec(const char& c);
+
+/*
+pops operators from stack and pushes to postfix until
+the stack until empty, left parentheses is found, 
+or token with precedence < than c is found.
+*/
+void handle_operator(stack<char>& s, string& postfix, char& c);
+
+/*
+pops operators from stack and pushes to postfix until
+a left parentheses character is found.
+*/
+void find_left_parentheses();
 
 #endif
 
