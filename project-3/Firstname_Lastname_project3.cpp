@@ -138,7 +138,28 @@ const string who_am_i() {
 // Do not modify this function signature.
 vector<int> weird_traversal(TreeNode* root) {
     // Your code here!
-    return vector<int>();
+    vector<int> res;
+    if (root != NULL) {
+        TreeNode* curr = root;
+        // begin traversing the even levels
+        while (curr != NULL) {
+            // access odd level
+            if (curr->first_child != NULL) {
+                curr = curr->first_child;
+                // access even level
+                if (curr->first_child != NULL) {
+                    curr = curr->first_child;
+                    // get all children on even level
+                    TreeNode* even = curr;
+                    while (even != NULL) {
+                        res.push_back(even->id);
+                        even = even->next_sibling;
+                    }
+                }
+            }
+        }
+    }
+    return res;
 }
 
 
