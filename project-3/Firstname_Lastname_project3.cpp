@@ -3,6 +3,9 @@
 #include <string>
 #include <iostream>
 
+// other modules
+#include <stack>
+
 // be sure to change FIRSTNAME and LASTNAME with your own first and last name
 #include "Firstname_Lastname_project3.h"
 
@@ -139,23 +142,33 @@ const string who_am_i() {
 vector<int> weird_traversal(TreeNode* root) {
     // Your code here!
     vector<int> res;
+    stack<int> s;
     if (root != NULL) {
         res.push_back(root->id);
-        TreeNode* curr = root;
-        // begin traversing the even levels
-        while (curr->first_child != NULL) {
-            // access odd level
-            curr = curr->first_child;
-            if (curr != NULL) {
-                // access even level
-                curr = curr->first_child;
-                // get all children on even level
-                TreeNode* even = curr;
-                while (even != NULL) {
-                    res.push_back(even->id);
-                    even = even->next_sibling;
-                }
+        TreeNode* curr = root->first_child;
+        // begin traversing levels
+        while (curr != NULL) {
+            // get all children on odd level
+            TreeNode* odd = curr;
+            while (odd != NULL) {
+                s.push(odd->id);
+                odd = odd->next_sibling;
             }
+            // access even level
+            curr = curr->first_child;
+            // get all children on even level
+            TreeNode* even = curr;
+            while (even != NULL) {
+                res.push_back(even->id);
+                even = even->next_sibling;
+            }
+            // access odd level if possible
+            if (curr != NULL) curr = curr->first_child;
+        }
+        while (s.empty() == false) {
+            //cout << "collecting odd node: " << s.top() << endl;
+            res.push_back(s.top());
+            s.pop();
         }
     }
     return res;
@@ -444,7 +457,26 @@ bool test_weird_traversal() {
     string error;
     bool passed = true;
 
+    // test empty tree
+    vector<int> res0 = weird_traversal(NULL);
+    if (res0.size() != 0) {
+        passed = false;
+        error += "\nfailed on empty tree\n";
+    }
+
+    // test tree with just root
     TreeNode* root = new TreeNode(0, NULL, NULL);
+
+    vector<int> res1 = weird_traversal(root);
+    if (res1.size() != 1) {
+        passed = false;
+        error += "\nfailed on tree with single node\n";
+    } else if (res1.at(0) != root->id) {
+        passed = false;
+        error += "\nincorrect id collected from tree with single node\n";
+    }
+
+    // test full tree
 
     // first odd layer
     TreeNode* odd0 = new TreeNode(1, NULL, NULL);
@@ -462,7 +494,11 @@ bool test_weird_traversal() {
 
     // second odd layer
     TreeNode* odd0_2 = new TreeNode(9, NULL, NULL);
+    TreeNode* odd1_2 = new TreeNode(11, NULL, NULL);
+    TreeNode* odd2_2 = new TreeNode(13, NULL, NULL);
     even0->first_child = odd0_2;
+    odd0_2->next_sibling = odd1_2;
+    odd1_2->next_sibling = odd2_2;
 
     // second even layer
     TreeNode* even0_2 = new TreeNode(10, NULL, NULL);
@@ -471,7 +507,7 @@ bool test_weird_traversal() {
     even0_2->next_sibling = even1_2;
 
     // expected output of weird traversal for this tree
-    vector<int> exp = {0, 2, 4, 6, 8, 10, 12};
+    vector<int> exp = {0, 2, 4, 6, 8, 10, 12, 13, 11, 9, 1};
 
     vector<int> res = weird_traversal(root);
 
@@ -480,6 +516,10 @@ bool test_weird_traversal() {
         error += "\nincorrect size\n";
         error += "expected: " + to_string(exp.size()) + "\n";
         error += "result: " + to_string(res.size()) + "\n";
+        for (int i = 0; i < res.size(); i++) {
+            error += to_string(res.at(i)) + " ";
+        }
+        error += "\n";
     }
 
     if (res.size() == exp.size()) {
@@ -492,6 +532,29 @@ bool test_weird_traversal() {
             }
         }
     }
+
+    // copied code from prof. block's test case for weird_traversal()
+
+    TreeNode* test = new TreeNode(
+      0, 
+      new TreeNode(1, nullptr, new TreeNode(2, new TreeNode(4, new TreeNode(6, nullptr,
+        new TreeNode(7, nullptr, new TreeNode(8))
+            ),
+            nullptr
+          ),
+          new TreeNode(3,
+            new TreeNode(5, new TreeNode(9, nullptr, new TreeNode(10, nullptr,
+                  new TreeNode(11, nullptr, new TreeNode(12)))), nullptr), nullptr)
+        )
+      ),
+      nullptr
+    );
+
+    std::vector<int> wd_trav = weird_traversal(test);
+
+    const std::vector<int> wd_ans = {0, 4, 5, 12, 11, 10, 9, 8, 7, 6, 3, 2, 1};
+
+    if(wd_trav == wd_ans) passed = false;
 
     if (!passed) {
         cout << "weird traversal errors:\n";
