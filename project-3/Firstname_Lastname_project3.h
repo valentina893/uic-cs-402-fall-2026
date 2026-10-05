@@ -72,6 +72,8 @@ void find_left_parentheses(stack<char>& s, string& postfix);
 
 // unit test function declarations
 
+bool test_weird_traversal();
+
 bool test_infix_to_postfix();
 bool test_build_parse_tree();
 
