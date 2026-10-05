@@ -140,21 +140,20 @@ vector<int> weird_traversal(TreeNode* root) {
     // Your code here!
     vector<int> res;
     if (root != NULL) {
+        res.push_back(root->id);
         TreeNode* curr = root;
         // begin traversing the even levels
-        while (curr != NULL) {
+        while (curr->first_child != NULL) {
             // access odd level
-            if (curr->first_child != NULL) {
-                curr = curr->first_child;
+            curr = curr->first_child;
+            if (curr != NULL) {
                 // access even level
-                if (curr->first_child != NULL) {
-                    curr = curr->first_child;
-                    // get all children on even level
-                    TreeNode* even = curr;
-                    while (even != NULL) {
-                        res.push_back(even->id);
-                        even = even->next_sibling;
-                    }
+                curr = curr->first_child;
+                // get all children on even level
+                TreeNode* even = curr;
+                while (even != NULL) {
+                    res.push_back(even->id);
+                    even = even->next_sibling;
                 }
             }
         }
@@ -440,6 +439,59 @@ void find_left_parentheses(stack<char>& s, string& postfix) {
     s.pop();
 }
 
+bool test_weird_traversal() {
+
+    string error;
+    bool passed = true;
+
+    TreeNode* root = new TreeNode(0, NULL, NULL);
+
+    // odd layer
+    TreeNode* odd0 = new TreeNode(1, NULL, NULL);
+    root->first_child = odd0;
+
+    // even layer
+    TreeNode* even0 = new TreeNode(2, NULL, NULL);
+    TreeNode* even1 = new TreeNode(4, NULL, NULL);
+    TreeNode* even2 = new TreeNode(6, NULL, NULL);
+    TreeNode* even3 = new TreeNode(8, NULL, NULL);
+    odd0->first_child = even0;
+    even0->next_sibling = even1;
+    even1->next_sibling = even2;
+    even2->next_sibling = even3;
+
+    // expected output of weird traversal for this tree
+    vector<int> exp = {0, 2, 4, 6, 8};
+
+    vector<int> res = weird_traversal(root);
+
+    if (res.size() != exp.size()) {
+        passed = false;
+        error += "\nincorrect size\n";
+        error += "expected: " + to_string(exp.size()) + "\n";
+        error += "result: " + to_string(res.size()) + "\n";
+    }
+
+    if (res.size() == exp.size()) {
+        for (int i = 0; i < res.size(); i++) {
+            if (res.at(i) != exp.at(i)) {
+                passed = false;
+                error += "\nincorrect element at position " + to_string(i) + "\n";
+                error += "expected: " + to_string(exp.at(i)) + "\n";
+                error += "result: " + to_string(res.at(i)) + "\n"; 
+            }
+        }
+    }
+
+    if (!passed) {
+        cout << "weird traversal errors:\n";
+        cout << error;
+    }
+
+    return passed;
+
+}
+
 bool test_infix_to_postfix() {
     string test1 = "c | (a ^ b)";
     string test2 = "a | b ^ c";
@@ -556,7 +608,8 @@ bool test_build_parse_tree() {
 
 int main() {
 
-    test_build_parse_tree();
+    test_weird_traversal();
+    //test_build_parse_tree();
 
     return 0;
 }
