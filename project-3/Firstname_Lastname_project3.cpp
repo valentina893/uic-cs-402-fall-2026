@@ -446,11 +446,11 @@ bool test_weird_traversal() {
 
     TreeNode* root = new TreeNode(0, NULL, NULL);
 
-    // odd layer
+    // first odd layer
     TreeNode* odd0 = new TreeNode(1, NULL, NULL);
     root->first_child = odd0;
 
-    // even layer
+    // first even layer
     TreeNode* even0 = new TreeNode(2, NULL, NULL);
     TreeNode* even1 = new TreeNode(4, NULL, NULL);
     TreeNode* even2 = new TreeNode(6, NULL, NULL);
@@ -460,8 +460,18 @@ bool test_weird_traversal() {
     even1->next_sibling = even2;
     even2->next_sibling = even3;
 
+    // second odd layer
+    TreeNode* odd0_2 = new TreeNode(9, NULL, NULL);
+    even0->first_child = odd0_2;
+
+    // second even layer
+    TreeNode* even0_2 = new TreeNode(10, NULL, NULL);
+    TreeNode* even1_2 = new TreeNode(12, NULL, NULL);
+    odd0_2->first_child = even0_2;
+    even0_2->next_sibling = even1_2;
+
     // expected output of weird traversal for this tree
-    vector<int> exp = {0, 2, 4, 6, 8};
+    vector<int> exp = {0, 2, 4, 6, 8, 10, 12};
 
     vector<int> res = weird_traversal(root);
 
