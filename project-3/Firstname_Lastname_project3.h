@@ -13,6 +13,12 @@ struct TreeNode {
     int id;
     TreeNode* first_child;
     TreeNode* next_sibling;
+
+    TreeNode(int id, TreeNode* first_child, TreeNode* next_sibling) {
+        this->id = id;
+        this->first_child = first_child;
+        this->next_sibling = next_sibling;
+    }
 };
 
 const static char AND = '^';
