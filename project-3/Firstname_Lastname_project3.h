@@ -86,6 +86,7 @@ void find_left_parentheses(stack<char>& s, string& postfix);
 
 bool test_weird_traversal();
 
+bool check_equal(TreeNode* t1, TreeNode* t2);
 bool test_bits_to_tree();
 
 bool test_infix_to_postfix();
