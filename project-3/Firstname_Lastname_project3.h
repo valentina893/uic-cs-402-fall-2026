@@ -13,18 +13,6 @@ struct TreeNode {
     int id;
     TreeNode* first_child;
     TreeNode* next_sibling;
-
-    TreeNode(int id) {
-        this->id = id;
-        this->first_child = NULL;
-        this->next_sibling = NULL;
-    }
-
-    TreeNode(int id, TreeNode* first_child, TreeNode* next_sibling) {
-        this->id = id;
-        this->first_child = first_child;
-        this->next_sibling = next_sibling;
-    }
 };
 
 const static char AND = '^';
