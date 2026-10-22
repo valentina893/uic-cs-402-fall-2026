@@ -241,8 +241,96 @@ vector<int> weird_traversal(TreeNode* root) {
  */
 
 // Do not modify this fuction signature
+
+// used chatgpt since im too lazy for ts
 TreeNode* bits_to_tree(const vector<bool>& bits) {
-    return NULL;
+    
+    // A single root node is represented by an empty bit vector.
+    TreeNode* root = new TreeNode(0, nullptr, nullptr);
+
+    vector<TreeNode*> s;
+    s.push_back(root);
+
+    int next_id = 1;
+    int balance = 0;
+
+    for (bool bit : bits) {
+        if (bit) {
+            // A down traversal creates a new child.
+            TreeNode* child = new TreeNode(next_id++);
+
+            TreeNode* parent = s.back();
+
+            // Attach as the first child if none exists.
+            if (parent->first_child == nullptr) {
+                parent->first_child = child;
+            } else {
+                // Otherwise, append to the end of the sibling chain.
+                TreeNode* sibling = parent->first_child;
+                while (sibling->next_sibling != nullptr) {
+                    sibling = sibling->next_sibling;
+                }
+                sibling->next_sibling = child;
+            }
+
+            s.push_back(child);
+            balance++;
+        } else {
+            // An up traversal must have a matching down traversal.
+            if (s.size() <= 1) {
+                // Invalid encoding: would move above the root.
+                // Clean up the partially constructed tree.
+                vector<TreeNode*> cleanup;
+                cleanup.push_back(root);
+
+                while (!cleanup.empty()) {
+                    TreeNode* node = cleanup.back();
+                    cleanup.pop_back();
+
+                    if (node->first_child != nullptr) {
+                        cleanup.push_back(node->first_child);
+                    }
+                    if (node->next_sibling != nullptr) {
+                        cleanup.push_back(node->next_sibling);
+                    }
+
+                    delete node;
+                }
+
+                return nullptr;
+            }
+
+            s.pop_back();
+            balance--;
+        }
+
+        // A prefix cannot have more up traversals than down traversals.
+        if (balance < 0) {
+            return nullptr;
+        }
+    }
+
+    // A valid traversal must return to the root.
+    if (s.size() != 1 || balance != 0) {
+        vector<TreeNode*> cleanup;
+        cleanup.push_back(root);
+
+        while (!cleanup.empty()) {
+            TreeNode* node = cleanup.back();
+            cleanup.pop_back();
+
+            if (node->first_child != nullptr) {
+                cleanup.push_back(node->first_child);
+            }
+            if (node->next_sibling != nullptr) {
+                cleanup.push_back(node->next_sibling);
+            }
+
+            delete node;
+        }
+        return nullptr;
+    }
+    return root;
 }
 
 
@@ -614,6 +702,16 @@ bool test_bits_to_tree() {
     int res = 100*(score / total_score);
 
     if (res != 100) {
+        error += "expected tree1\n";
+        bfs(sol1, error);
+        error += "\nresult tree1\n";
+        bfs(ans1, error);
+        passed = false;
+
+        error += "expected tree2\n";
+        bfs(sol2, error);
+        error += "\nresult tree2\n";
+        bfs(ans2, error);
         passed = false;
     }
 
