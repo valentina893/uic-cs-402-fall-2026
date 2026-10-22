@@ -15,6 +15,20 @@ struct TreeNode {
     TreeNode* next_sibling;
 };
 
+string bfs(TreeNode* root, string& buff) {
+    if (root) {
+        buff += to_string(root->id) + ", ";
+        TreeNode* curr = root->next_sibling;
+        while (curr != NULL) {
+            buff += to_string(curr->id) + ", ";
+            curr = curr->next_sibling;
+        }
+        buff += "\n";
+        bfs(root->first_child, buff);
+    }
+    return buff;
+}
+
 const static char AND = '^';
 const static char OR = '|';
 const static char NOT = '~';
