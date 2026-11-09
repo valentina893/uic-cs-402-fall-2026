@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <unordered_map>
 
 // Struct Declarations
 
@@ -87,5 +88,9 @@ std::vector<GridNode> a_star_algorithm(
     std::function<double(GridNode,GridNode)> h
 );
 
+// testing methods
+
+bool is_valid_topo(int n, std::vector<Edge> edges, std::vector<int> order);
+bool test_top_order(); 
 
 #endif
