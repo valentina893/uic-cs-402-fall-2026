@@ -3,6 +3,7 @@
 #include "Firstname_Lastname_project4.h"
 #include <string>
 #include <deque>
+#include <iostream>
 
 using namespace std;
 
@@ -83,11 +84,16 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
     // if length of top_order != n, return empty array?
     // return top_order
 
-    if (n > 0 && edges.size() >= 0) {
+    vector<int> top_order;
+    if (n > 0 && edges.size() > 0) {
         unordered_map<int, vector<int>> adj_list;
         vector<int> in_degrees(n);
         for (int i = 0; i < edges.size(); i++) {
-            adj_list.at(i).push_back(edges.at(i).to);
+            if (adj_list.count(i) == 0) {
+                adj_list[edges.at(i).from].push_back(edges.at(i).to);
+            } else {
+                adj_list.at(edges.at(i).from).push_back(edges.at(i).to);
+            }
             in_degrees.at(edges.at(i).to) += 1;
         }
 
@@ -99,11 +105,11 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
             }
         }
 
-        vector<int> top_order;
-
         while (q.size() > 0) {
             int curr = q.front();
             q.pop_front();
+
+            top_order.push_back(curr);
 
             for (int i = 0; i < adj_list.at(curr).size(); i++) {
                 in_degrees.at(i)--;
@@ -112,7 +118,13 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
                 }
             }
         }
+    } else {
+        for (int i = 0; i < n; i++) {
+            top_order.push_back(i);
+        }
     }
+    if (top_order.size() != n) return vector<int>{};
+    return top_order;
 }
 
 
@@ -144,6 +156,7 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
  *
  */
 vector<int> dag_single_source(int n, vector<Edge> edges, int source) {
+    return vector<int>{};
 }
 
 
@@ -179,7 +192,7 @@ vector<Node> dijkstras_algorithm(int n, vector<Edge> edges, int source) {
     // Your code here!
     // Note: see the LeetCode from in-class for the problem "Cheapest Flights
     // K stops" to see how you can create a priority_queue with the Node struct.
-    
+    return vector<Node>{};
 }
 
 
@@ -280,6 +293,7 @@ vector<Node> dijkstras_algorithm(int n, vector<Edge> edges, int source) {
 // You must implement this function.
 double heuristic_cost(GridNode start, GridNode dest) {
     // Your code here!
+    return 0.0f;
 }
 
 // To test your algorithm with the function "heruistic_cost" above,
@@ -296,10 +310,65 @@ vector<GridNode> a_star_algorithm(
     // Your code here!
     // Be sure to use "h" from the inputs in your implementation; do not
     // directly use "heruistic_cost" above!
-
+    return vector<GridNode>{};
 }
 
 int main() {
+    test_top_order();
     return 0;
 }
 
+bool is_valid_topo(int n, std::vector<Edge> edges, std::vector<int> order) {
+    if(order.empty()) {
+        std::vector<int> my_order = topological_sort(n, edges);
+        return my_order.empty();
+    }
+    std::vector<std::vector<int>> graph(n);
+    std::vector<int> indeg(n,0);
+    for(const Edge& e: edges) {
+        graph[e.from].push_back(e.to);
+        ++indeg[e.to];
+    }
+    for(int i = 0; i < n; ++i) {
+        int curr = order[i];
+        if(indeg[curr] != 0) return false;
+        for(int& child: graph[curr]) {
+            --indeg[child];
+        }
+    }
+    return true;
+}
+
+bool test_top_order() {
+
+    int score = 0;
+    // empty test
+    std::vector<Edge> empty_test = {};
+    std::vector<int> empty_res = topological_sort(0, empty_test);
+    if(empty_res.empty()) ++score;
+
+    cout << "empty\n";
+
+    // single node test
+    std::vector<int> single_res = topological_sort(1, empty_test);
+    if(is_valid_topo(1, empty_test, single_res)) ++score;
+
+    cout << "single\n";
+
+    // easy small tests
+    std::vector<Edge> test1 = {Edge(0,1,1), Edge(1,2,1), Edge(2,3,1), Edge(3,4,1)};
+    std::vector<Edge> test2 = {Edge(0,1,1), Edge(2,1,1), Edge(0,3,1), Edge(2,3,1)};
+    std::vector<Edge> test3 = {Edge(0,1,1), Edge(1,2,1), Edge(2,3,1), Edge(3,0,1)}; // has a cycle
+
+
+    std::vector<int> res1 = topological_sort(5, test1);
+    if(is_valid_topo(5, test1, res1)) ++score;
+
+    std::vector<int> res2 = topological_sort(4, test2);
+    if(is_valid_topo(4, test2, res2)) ++score;
+
+    std::vector<int> res3 = topological_sort(4, test3);
+    if(is_valid_topo(4, test3, res3)) ++score;
+
+    return true;
+}
