@@ -2,6 +2,7 @@
 // be sure to change FIRSTNAME and LASTNAME with your own first and last name
 #include "Firstname_Lastname_project4.h"
 #include <string>
+#include <deque>
 
 using namespace std;
 
@@ -70,7 +71,48 @@ const string who_am_i() {
 
 
 vector<int> topological_sort(int n, vector<Edge> edges) {
-    // Your code here!
+    // Khan's algorithm:
+    // build an adj_list and calculate each node's in-degrees
+    // queue all nodes with in-degree == 0
+    // while queue isn't empty
+    //   pop node
+    //   for each neighbor of node
+    //     decrement neighbor's in-degree
+    //     if neighbor's in-degree == 0
+    //       push to queue
+    // if length of top_order != n, return empty array?
+    // return top_order
+
+    if (n > 0 && edges.size() >= 0) {
+        unordered_map<int, vector<int>> adj_list;
+        vector<int> in_degrees(n);
+        for (int i = 0; i < edges.size(); i++) {
+            adj_list.at(i).push_back(edges.at(i).to);
+            in_degrees.at(edges.at(i).to) += 1;
+        }
+
+        deque<int> q;
+
+        for (int i = 0; i < in_degrees.size(); i++) {
+            if (in_degrees.at(i) == 0) {
+                q.push_back(i);
+            }
+        }
+
+        vector<int> top_order;
+
+        while (q.size() > 0) {
+            int curr = q.front();
+            q.pop_front();
+
+            for (int i = 0; i < adj_list.at(curr).size(); i++) {
+                in_degrees.at(i)--;
+                if (in_degrees.at(i) == 0) {
+                    q.push_back(in_degrees.at(i));
+                }
+            }
+        }
+    }
 }
 
 
