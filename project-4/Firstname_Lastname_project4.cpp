@@ -156,7 +156,26 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
  *
  */
 vector<int> dag_single_source(int n, vector<Edge> edges, int source) {
-    return vector<int>{};
+    vector<int> distances(n, INT_MAX);
+    distances.at(source) = 0;
+    if (n > 0 && edges.size() > 0 && source >= 0) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < edges.size(); j++) {
+                if (distances.at(edges.at(j).from) != INT_MAX && 
+                distances.at(edges.at(j).from) + 
+                edges.at(j).weight < 
+                edges.at(j).to) {
+                    if (i != n - 1) {
+                        return {-1};
+                    }
+                    distances.at(edges.at(j).to) = 
+                    distances.at(edges.at(j).from) + 
+                    edges.at(j).weight;
+                }
+            }
+        }
+    }
+    return distances;
 }
 
 
@@ -315,6 +334,7 @@ vector<GridNode> a_star_algorithm(
 
 int main() {
     test_top_order();
+    test_dag_single_source();
     return 0;
 }
 
@@ -347,13 +367,9 @@ bool test_top_order() {
     std::vector<int> empty_res = topological_sort(0, empty_test);
     if(empty_res.empty()) ++score;
 
-    cout << "empty\n";
-
     // single node test
     std::vector<int> single_res = topological_sort(1, empty_test);
     if(is_valid_topo(1, empty_test, single_res)) ++score;
-
-    cout << "single\n";
 
     // easy small tests
     std::vector<Edge> test1 = {Edge(0,1,1), Edge(1,2,1), Edge(2,3,1), Edge(3,4,1)};
@@ -370,5 +386,43 @@ bool test_top_order() {
     std::vector<int> res3 = topological_sort(4, test3);
     if(is_valid_topo(4, test3, res3)) ++score;
 
+    return true;
+}
+
+bool test_dag_single_source() {
+    double total_score = 19.0;
+    double score = 0.0;
+
+    // empty test
+    //std::vector<Edge> empty_test = {};
+    //std::vector<int> empty_res = dag_single_source(0, empty_test, -1);
+    //if(empty_res.empty()) ++score;
+
+    // single node test
+    std::vector<int> single_res = dag_single_source(1, {}, 0);
+    if(single_res[0] == 0) ++score;
+
+    // singleton test
+
+    // easy tests
+    std::vector<Edge> test1 = {Edge(0,1,1), Edge(0,2,-1), Edge(2,1,1)};
+    std::vector<int> ans1 = {0, 0, -1};
+    std::vector<int> ans3 = {INT_MAX, 1, 0};
+
+    std::vector<Edge> test2 = {Edge(0, 1, 2), Edge(0,2,2), Edge(1,3,-2), Edge(1,4,2), Edge(2,5,-3), Edge(2,6,3)};
+    std::vector<int> ans2 = {0, 2, 2, 0, 4, -1, 5};
+
+    std::vector<int> res1 = dag_single_source(3, test1, 0);
+    if(res1 == ans1) ++score;
+    std::vector<int> res3 = dag_single_source(3, test1, 2);
+    if(res3 == ans3) ++score;
+
+    std::vector<int> res2 = dag_single_source(7, test2, 0);
+    if(res2 == ans2) ++score;
+
+    if (100*(score / total_score) == 100) {
+        cout << "dag_single_source failed\n";
+        return false;
+    }
     return true;
 }
