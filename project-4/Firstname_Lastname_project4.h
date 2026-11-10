@@ -93,4 +93,6 @@ std::vector<GridNode> a_star_algorithm(
 bool is_valid_topo(int n, std::vector<Edge> edges, std::vector<int> order);
 bool test_top_order(); 
 
+bool test_dag_single_source();
+
 #endif
