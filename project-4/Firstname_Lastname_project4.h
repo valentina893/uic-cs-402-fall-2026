@@ -95,4 +95,8 @@ bool test_top_order();
 
 bool test_dag_single_source();
 
+bool test_dijkstra();
+bool soft_check_ans(int n, const std::vector<Node>& ans, const std::vector<Node>& correct);
+bool hard_check_ans(int n, const std::vector<Node>& ans, const std::vector<Node>& correct);
+
 #endif
