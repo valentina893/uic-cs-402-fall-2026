@@ -373,18 +373,119 @@ double heuristic_cost(GridNode start, GridNode dest) {
 // To test your algorithm with the function "heruistic_cost" above,
 // simply pass "heuristic_cost" as a parameter to the function.
 vector<GridNode> a_star_algorithm(
-    int m, 
-    int n, 
-    vector<GridEdge> edges, 
-    GridNode source, 
+    int m,
+    int n,
+    vector<GridEdge> edges,
+    GridNode source,
     GridNode target,
-    function<double(GridNode,GridNode)> h
-) 
-{
-    // Your code here!
-    // Be sure to use "h" from the inputs in your implementation; do not
-    // directly use "heruistic_cost" above!
-    return vector<GridNode>{};
+    function<double(GridNode, GridNode)> h
+) {
+    // Convert (x, y) coordinates into a unique integer key.
+    auto key = [n](int x, int y) {
+        return x * n + y;
+    };
+
+    // Build adjacency list.
+    vector<vector<pair<int, int>>> adj(m * n);
+
+    for (const GridEdge& edge : edges) {
+        adj[key(edge.from_x, edge.from_y)].push_back(
+            {edge.to_x, edge.to_y}
+        );
+    }
+
+    // Store the best known cost to reach each node.
+    vector<double> g_score(m * n, numeric_limits<double>::infinity());
+
+    // Store predecessors for reconstructing the path.
+    vector<pair<int, int>> came_from(m * n, {-1, -1});
+
+    // Priority queue stores (f_score, GridNode).
+    // Smallest f_score is processed first.
+    priority_queue<
+        pair<double, GridNode>,
+        vector<pair<double, GridNode>>,
+        greater<pair<double, GridNode>>
+    > open_set;
+
+    int source_key = key(source.x, source.y);
+    int target_key = key(target.x, target.y);
+
+    source.path_cost = 0.0;
+    g_score[source_key] = 0.0;
+
+    open_set.push({h(source, target), source});
+
+    while (!open_set.empty()) {
+        GridNode current = open_set.top().second;
+        open_set.pop();
+
+        int current_key = key(current.x, current.y);
+
+        // Ignore outdated entries in the priority queue.
+        if (current.path_cost > g_score[current_key]) {
+            continue;
+        }
+
+        // Target reached.
+        if (current.x == target.x && current.y == target.y) {
+            vector<GridNode> path;
+
+            int x = target.x;
+            int y = target.y;
+
+            while (x != -1 && y != -1) {
+                GridNode node;
+                node.x = x;
+                node.y = y;
+                node.path_cost = g_score[key(x, y)];
+
+                node.pred_x = came_from[key(x, y)].first;
+                node.pred_y = came_from[key(x, y)].second;
+
+                path.push_back(node);
+
+                pair<int, int> pred = came_from[key(x, y)];
+
+                x = pred.first;
+                y = pred.second;
+            }
+
+            reverse(path.begin(), path.end());
+
+            return path;
+        }
+
+        // Explore neighbors.
+        for (const auto& neighbor : adj[current_key]) {
+            int nx = neighbor.first;
+            int ny = neighbor.second;
+
+            int neighbor_key = key(nx, ny);
+
+            // Each edge has a movement cost of 1.
+            double tentative_g = g_score[current_key] + 1.0;
+
+            if (tentative_g < g_score[neighbor_key]) {
+                came_from[neighbor_key] = {current.x, current.y};
+                g_score[neighbor_key] = tentative_g;
+
+                GridNode next;
+                next.x = nx;
+                next.y = ny;
+                next.path_cost = tentative_g;
+                next.pred_x = current.x;
+                next.pred_y = current.y;
+
+                double f_score = tentative_g + h(next, target);
+
+                open_set.push({f_score, next});
+            }
+        }
+    }
+
+    // No path exists.
+    return {};
 }
 
 int main() {
