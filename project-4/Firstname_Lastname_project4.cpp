@@ -365,7 +365,9 @@ vector<Node> dijkstras_algorithm(int n, vector<Edge> edges, int source) {
 // You must implement this function.
 double heuristic_cost(GridNode start, GridNode dest) {
     // Your code here!
-    return 0.0f;
+    return (
+        (double)((sqrt(start.y - dest.y) * (start.y - dest.y) + (start.x - dest.x) * (start.x - dest.x)))
+    );
 }
 
 // To test your algorithm with the function "heruistic_cost" above,
